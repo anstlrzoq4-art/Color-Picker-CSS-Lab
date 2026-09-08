@@ -1,0 +1,6 @@
+{
+  "name": "Color Picker & CSS Converter Lab",
+  "description": "Zero-dependency Color Picker & CSS Converter Lab to inspect, convert, and manage HEX, RGB, HSL, and RGBA color codes with 20-language support, palettes, and contrast checking.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

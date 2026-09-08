@@ -1,0 +1,2581 @@
+<!doctype html>
+<html lang="en" class="dark">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Color Picker &amp; CSS Converter Lab - Inspect &amp; Convert Color Codes</title>
+    <meta name="description" content="Professional zero-dependency Color Picker &amp; CSS Converter Lab. Inspect, convert, and manage HEX, RGB, HSL, RGBA codes with live WCAG contrast checking, color harmonies, and 20-language support." />
+    <meta name="keywords" content="color picker, css converter, hex to rgb, rgb to hsl, color palette generator, wcag contrast, color tool" />
+    <meta name="author" content="Color Picker Lab" />
+    <meta name="theme-color" content="#4f46e5" id="meta-theme-color" />
+    
+    <!-- Open Graph (OG) & Twitter Meta Tags -->
+    <meta property="og:title" content="Color Picker &amp; CSS Converter Lab" />
+    <meta property="og:description" content="Inspect, convert, and manage HEX, RGB, HSL, and RGBA codes instantly with 20 languages and WCAG contrast checking." />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://colorpickerlab.app" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="Color Picker &amp; CSS Converter Lab" />
+    <meta name="twitter:description" content="Zero-build, lightning-fast Color Picker and CSS Converter for web creators." />
+
+    <!-- PWA Meta & Inline Data URI Manifest -->
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="apple-mobile-web-app-title" content="ColorLab" />
+    <link rel="manifest" href="data:application/manifest+json,%7B%22name%22%3A%22Color%20Picker%20%26%20CSS%20Converter%20Lab%22%2C%22short_name%22%3A%22ColorLab%22%2C%22start_url%22%3A%22.%22%2C%22display%22%3A%22standalone%22%2C%22background_color%22%3A%22%230f172a%22%2C%22theme_color%22%3A%22%234f46e5%22%7D" />
+
+    <!-- Schema.org JSON-LD Structured Data -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "WebApplication",
+      "name": "Color Picker & CSS Converter Lab",
+      "url": "https://colorpickerlab.app",
+      "applicationCategory": "DeveloperApplication",
+      "operatingSystem": "All",
+      "description": "Interactive Color Picker and CSS converter with color harmonies, WCAG contrast verification, 20 languages, and export tools."
+    }
+    </script>
+
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+      tailwind.config = {
+        darkMode: 'class',
+        theme: {
+          extend: {
+            colors: {
+              brand: {
+                50: '#eef2ff',
+                500: '#6366f1',
+                600: '#4f46e5',
+                700: '#4338ca',
+              }
+            }
+          }
+        }
+      }
+    </script>
+    <style>
+      /* Smooth transitions & tactile feedback */
+      * { transition: background-color 0.15s ease, border-color 0.15s ease; }
+      input[type="range"] { accent-color: #6366f1; }
+      .swatch-glow { box-shadow: 0 10px 25px -5px rgba(0,0,0,0.3); }
+      .custom-scrollbar::-webkit-scrollbar { height: 6px; width: 6px; }
+      .custom-scrollbar::-webkit-scrollbar-thumb { background: rgba(150,150,150,0.3); border-radius: 4px; }
+    </style>
+  </head>
+  <body class="bg-slate-950 text-slate-100 min-h-screen flex flex-col font-sans antialiased selection:bg-indigo-500 selection:text-white">
+
+    <!-- Top Navigation Bar -->
+    <header class="sticky top-0 z-30 border-b border-slate-800/80 bg-slate-900/90 backdrop-blur-md px-4 py-3 sm:px-6">
+      <div class="max-w-7xl mx-auto flex flex-wrap items-center justify-between gap-3">
+        
+        <!-- Logo & Title -->
+        <div class="flex items-center gap-3">
+          <div id="header-color-dot" class="w-8 h-8 rounded-lg shadow-md border border-white/20 flex items-center justify-center font-black text-xs text-white" style="background-color: #4f46e5;">
+            CL
+          </div>
+          <div>
+            <h1 class="text-base sm:text-lg font-bold tracking-tight text-white flex items-center gap-2">
+              <span data-i18n="app_title">Color Picker &amp; CSS Lab</span>
+              <span class="text-[10px] uppercase font-mono px-1.5 py-0.5 rounded bg-indigo-900/60 text-indigo-300 border border-indigo-700/50">v2.0</span>
+            </h1>
+          </div>
+        </div>
+
+        <!-- Right Controls: Randomize, Shortcuts, Theme, 20-Lang Selector -->
+        <div class="flex items-center flex-wrap gap-2">
+          <!-- Random Button -->
+          <button id="btn-random-top" class="px-2.5 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 border border-slate-700 text-xs font-medium flex items-center gap-1.5 transition active:scale-95" title="Generate Random Color (Space)">
+            <span>🎲</span>
+            <span class="hidden sm:inline" data-i18n="random">Random</span>
+          </button>
+
+          <!-- Shortcuts Dialog Button -->
+          <button id="btn-shortcuts" class="px-2.5 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 border border-slate-700 text-xs font-medium transition active:scale-95" title="Keyboard Shortcuts (?)">
+            <span class="font-mono">⌨️</span>
+          </button>
+
+          <!-- Theme Preset Toggle -->
+          <select id="theme-selector" class="bg-slate-800 border border-slate-700 text-xs rounded-lg px-2.5 py-1.5 text-slate-200 focus:outline-none focus:ring-1 focus:ring-indigo-500 cursor-pointer">
+            <option value="dark">🌙 Dark</option>
+            <option value="light">☀️ Light</option>
+            <option value="cyberpunk">⚡ Cyber</option>
+            <option value="emerald">🌲 Emerald</option>
+            <option value="sunset">🌅 Sunset</option>
+          </select>
+
+          <!-- 20-Language i18n Dropdown -->
+          <select id="lang-selector" class="bg-slate-800 border border-slate-700 text-xs rounded-lg px-2.5 py-1.5 text-slate-200 focus:outline-none focus:ring-1 focus:ring-indigo-500 cursor-pointer font-medium" aria-label="Language Selector">
+            <option value="en">🇺🇸 English</option>
+            <option value="ko">🇰🇷 한국어</option>
+            <option value="ja">🇯🇵 日本語</option>
+            <option value="zh">🇨🇳 中文</option>
+            <option value="es">🇪🇸 Español</option>
+            <option value="fr">🇫🇷 Français</option>
+            <option value="de">🇩🇪 Deutsch</option>
+            <option value="pt">🇧🇷 Português</option>
+            <option value="ru">🇷🇺 Русский</option>
+            <option value="it">🇮🇹 Italiano</option>
+            <option value="vi">🇻🇳 Tiếng Việt</option>
+            <option value="th">🇹🇭 ไทย</option>
+            <option value="id">🇮🇩 Bahasa Indonesia</option>
+            <option value="tr">🇹🇷 Türkçe</option>
+            <option value="pl">🇵🇱 Polski</option>
+            <option value="nl">🇳🇱 Nederlands</option>
+            <option value="ar">🇸🇦 العربية</option>
+            <option value="hi">🇮🇳 हिन्दी</option>
+            <option value="sv">🇸🇪 Svenska</option>
+            <option value="uk">🇺🇦 Українська</option>
+          </select>
+        </div>
+      </div>
+    </header>
+
+    <!-- Main Content Grid -->
+    <main class="flex-1 max-w-7xl w-full mx-auto p-4 sm:p-6 space-y-6">
+      
+      <!-- AD SLOT 1 (Header/Banner Responsive Slot - 90px height) -->
+      <!-- AD SLOT -->
+      <div id="ad-slot-top" class="w-full h-[90px] rounded-xl border border-dashed border-slate-800 bg-slate-900/40 flex items-center justify-center text-xs text-slate-500 overflow-hidden relative" aria-label="Sponsored Advertisement">
+        <div class="text-center">
+          <span class="uppercase tracking-widest text-[10px] font-semibold text-slate-600">Sponsor / Advertisement Space (728x90 / Responsive)</span>
+          <p class="text-[11px] text-slate-500 mt-0.5" data-i18n="ad_placeholder">Developer-targeted tools &amp; web design resources</p>
+        </div>
+      </div>
+
+      <!-- Core Workstation: Dual-Column Inspector Layout -->
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+        
+        <!-- Left Column: Master Color Display & Input Controls (7 cols) -->
+        <section class="lg:col-span-7 space-y-5">
+          
+          <!-- Master Color Preview Display -->
+          <div class="rounded-2xl border border-slate-800 bg-slate-900 p-5 shadow-xl space-y-4">
+            
+            <!-- Swatch Stage -->
+            <div id="master-swatch" class="h-44 sm:h-52 w-full rounded-xl swatch-glow flex flex-col justify-between p-4 relative overflow-hidden transition-all duration-200 border border-white/10" style="background-color: #4f46e5;">
+              <div class="flex justify-between items-start z-10 gap-2">
+                <div class="flex flex-wrap items-center gap-2">
+                  <span id="contrast-badge-top" class="px-2.5 py-1 rounded-md text-xs font-mono font-bold bg-black/40 text-white backdrop-blur-sm border border-white/20">
+                    WCAG AA: Pass
+                  </span>
+                  <div id="swatch-cvd-badge" class="hidden px-2.5 py-1 rounded-md text-xs font-mono font-bold bg-amber-400 text-slate-950 shadow-md border border-amber-300 items-center gap-1.5 animate-pulse">
+                    <span>👁️</span>
+                    <span id="swatch-cvd-label">Simulating: Protanopia</span>
+                    <button id="btn-reset-cvd-swatch" class="ml-1 px-1 rounded bg-black/20 hover:bg-black/40 text-black font-extrabold text-[10px]" title="Reset to Normal Vision">✕</button>
+                  </div>
+                </div>
+                <div class="flex gap-2">
+                  <button id="btn-eyedropper" class="hidden px-2.5 py-1 rounded-md text-xs font-medium bg-black/40 text-white hover:bg-black/60 backdrop-blur-sm border border-white/20 transition active:scale-95 items-center gap-1" title="Pick color from screen">
+                    <span>💉</span> <span data-i18n="eyedropper">EyeDropper</span>
+                  </button>
+                  <button id="btn-save-current" class="px-2.5 py-1 rounded-md text-xs font-medium bg-black/40 text-white hover:bg-black/60 backdrop-blur-sm border border-white/20 transition active:scale-95 flex items-center gap-1" title="Save to Palette (S)">
+                    <span>⭐</span> <span data-i18n="save_color">Save</span>
+                  </button>
+                </div>
+              </div>
+
+              <!-- Color Text on Swatch -->
+              <div class="z-10 flex items-baseline justify-between">
+                <div>
+                  <h2 id="swatch-hex-display" class="text-3xl sm:text-4xl font-extrabold tracking-wider font-mono text-white drop-shadow">
+                    #4F46E5
+                  </h2>
+                  <p id="swatch-sub-display" class="text-xs sm:text-sm font-mono text-white/80 drop-shadow">
+                    rgb(79, 70, 229)
+                  </p>
+                </div>
+                <button id="btn-copy-master" class="px-3 py-1.5 rounded-lg bg-white/20 hover:bg-white/30 text-white text-xs font-semibold backdrop-blur-md border border-white/30 transition active:scale-95" data-i18n="copy_hex">
+                  Copy HEX
+                </button>
+              </div>
+            </div>
+
+            <!-- Color Blindness Simulator Quick Mode Selector on Swatch -->
+            <div class="flex flex-wrap items-center justify-between gap-2 p-2.5 rounded-xl bg-slate-950 border border-slate-800 text-xs">
+              <div class="flex items-center gap-1.5 text-slate-300 font-mono text-[11px] font-semibold">
+                <span class="text-sm">👁️</span>
+                <span data-i18n="cvd_quick_title">Vision Mode:</span>
+              </div>
+              <div class="flex flex-wrap gap-1" id="swatch-cvd-pills">
+                <button class="cvd-pill-btn px-2.5 py-1 rounded-lg text-xs font-medium transition active:scale-95 bg-indigo-600 text-white font-mono" data-cvd="normal" data-i18n="cvd_normal">Normal</button>
+                <button class="cvd-pill-btn px-2.5 py-1 rounded-lg text-xs font-medium transition active:scale-95 bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700 font-mono" data-cvd="protanopia" data-i18n="cvd_protanopia">Protanopia</button>
+                <button class="cvd-pill-btn px-2.5 py-1 rounded-lg text-xs font-medium transition active:scale-95 bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700 font-mono" data-cvd="deuteranopia" data-i18n="cvd_deuteranopia">Deuteranopia</button>
+                <button class="cvd-pill-btn px-2.5 py-1 rounded-lg text-xs font-medium transition active:scale-95 bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700 font-mono" data-cvd="tritanopia" data-i18n="cvd_tritanopia">Tritanopia</button>
+                <button class="cvd-pill-btn px-2.5 py-1 rounded-lg text-xs font-medium transition active:scale-95 bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700 font-mono" data-cvd="achromatopsia" data-i18n="cvd_achromatopsia">Achromatopsia</button>
+              </div>
+            </div>
+
+            <!-- Native Color Picker & Quick Text Input Bar -->
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+              <div class="flex items-center gap-2 p-2 rounded-xl bg-slate-950 border border-slate-800">
+                <input type="color" id="native-color-picker" value="#4f46e5" class="w-10 h-10 rounded-lg cursor-pointer bg-transparent border-0 p-0" title="Native Color Picker" />
+                <div class="flex-1">
+                  <label for="input-hex" class="block text-[10px] uppercase font-mono text-slate-400">HEX Code</label>
+                  <input type="text" id="input-hex" value="#4F46E5" class="w-full bg-transparent text-sm font-mono font-bold text-white focus:outline-none uppercase" maxlength="9" />
+                </div>
+              </div>
+
+              <div class="flex items-center gap-2 p-2 rounded-xl bg-slate-950 border border-slate-800">
+                <div class="flex-1">
+                  <label for="input-rgb-string" class="block text-[10px] uppercase font-mono text-slate-400">RGB</label>
+                  <input type="text" id="input-rgb-string" value="79, 70, 229" class="w-full bg-transparent text-sm font-mono text-white focus:outline-none" />
+                </div>
+              </div>
+
+              <div class="flex items-center gap-2 p-2 rounded-xl bg-slate-950 border border-slate-800">
+                <div class="flex-1">
+                  <label for="input-alpha" class="block text-[10px] uppercase font-mono text-slate-400 flex justify-between">
+                    <span data-i18n="opacity">Opacity</span> <span id="label-alpha-val">100%</span>
+                  </label>
+                  <input type="range" id="input-alpha" min="0" max="100" value="100" class="w-full cursor-pointer h-2 bg-slate-800 rounded-lg" />
+                </div>
+              </div>
+            </div>
+
+            <!-- Sliders: RGB & HSL Fine Control Tabs -->
+            <div class="space-y-3 pt-2">
+              <div class="flex border-b border-slate-800 gap-4 text-xs font-semibold">
+                <button id="tab-btn-rgb" class="pb-2 border-b-2 border-indigo-500 text-indigo-400">RGB Channels</button>
+                <button id="tab-btn-hsl" class="pb-2 border-b-2 border-transparent text-slate-400 hover:text-slate-200">HSL Channels</button>
+              </div>
+
+              <!-- RGB Sliders Container -->
+              <div id="container-rgb-sliders" class="space-y-2.5">
+                <div class="flex items-center gap-3">
+                  <span class="w-6 text-xs font-mono font-bold text-red-400">R</span>
+                  <input type="range" id="slider-r" min="0" max="255" value="79" class="flex-1 cursor-pointer h-2 bg-slate-800 rounded-lg" />
+                  <input type="number" id="num-r" min="0" max="255" value="79" class="w-14 bg-slate-950 border border-slate-800 rounded px-1.5 py-0.5 text-xs font-mono text-center" />
+                </div>
+                <div class="flex items-center gap-3">
+                  <span class="w-6 text-xs font-mono font-bold text-emerald-400">G</span>
+                  <input type="range" id="slider-g" min="0" max="255" value="70" class="flex-1 cursor-pointer h-2 bg-slate-800 rounded-lg" />
+                  <input type="number" id="num-g" min="0" max="255" value="70" class="w-14 bg-slate-950 border border-slate-800 rounded px-1.5 py-0.5 text-xs font-mono text-center" />
+                </div>
+                <div class="flex items-center gap-3">
+                  <span class="w-6 text-xs font-mono font-bold text-blue-400">B</span>
+                  <input type="range" id="slider-b" min="0" max="255" value="229" class="flex-1 cursor-pointer h-2 bg-slate-800 rounded-lg" />
+                  <input type="number" id="num-b" min="0" max="255" value="229" class="w-14 bg-slate-950 border border-slate-800 rounded px-1.5 py-0.5 text-xs font-mono text-center" />
+                </div>
+              </div>
+
+              <!-- HSL Sliders Container -->
+              <div id="container-hsl-sliders" class="space-y-2.5 hidden">
+                <div class="flex items-center gap-3">
+                  <span class="w-6 text-xs font-mono font-bold text-purple-400">H</span>
+                  <input type="range" id="slider-h" min="0" max="360" value="243" class="flex-1 cursor-pointer h-2 bg-slate-800 rounded-lg" />
+                  <input type="number" id="num-h" min="0" max="360" value="243" class="w-14 bg-slate-950 border border-slate-800 rounded px-1.5 py-0.5 text-xs font-mono text-center" />
+                </div>
+                <div class="flex items-center gap-3">
+                  <span class="w-6 text-xs font-mono font-bold text-sky-400">S%</span>
+                  <input type="range" id="slider-s" min="0" max="100" value="76" class="flex-1 cursor-pointer h-2 bg-slate-800 rounded-lg" />
+                  <input type="number" id="num-s" min="0" max="100" value="76" class="w-14 bg-slate-950 border border-slate-800 rounded px-1.5 py-0.5 text-xs font-mono text-center" />
+                </div>
+                <div class="flex items-center gap-3">
+                  <span class="w-6 text-xs font-mono font-bold text-amber-400">L%</span>
+                  <input type="range" id="slider-l" min="0" max="100" value="59" class="flex-1 cursor-pointer h-2 bg-slate-800 rounded-lg" />
+                  <input type="number" id="num-l" min="0" max="100" value="59" class="w-14 bg-slate-950 border border-slate-800 rounded px-1.5 py-0.5 text-xs font-mono text-center" />
+                </div>
+              </div>
+            </div>
+
+            <!-- Tints & Shades Dynamic Bar -->
+            <div class="pt-2">
+              <span class="text-[11px] font-mono text-slate-400 block mb-1.5" data-i18n="tints_shades">Tints &amp; Shades (Lightness 10% - 90%)</span>
+              <div id="tints-shades-container" class="grid grid-cols-9 h-8 rounded-lg overflow-hidden border border-slate-800">
+                <!-- Injected via JS -->
+              </div>
+            </div>
+          </div>
+
+          <!-- Color Harmonies Section -->
+          <div class="rounded-2xl border border-slate-800 bg-slate-900 p-5 shadow-xl space-y-3">
+            <h3 class="text-xs uppercase tracking-wider font-mono text-slate-400 font-semibold" data-i18n="harmonies">Color Harmonies</h3>
+            <div class="grid grid-cols-2 sm:grid-cols-3 gap-3" id="harmonies-grid">
+              <!-- Dynamically generated: Complementary, Analogous, Triadic, Split, Tetradic, Monochromatic -->
+            </div>
+          </div>
+
+        </section>
+
+        <!-- Right Column: Code Generator, WCAG Contrast & Palette Lab (5 cols) -->
+        <section class="lg:col-span-5 space-y-5">
+          
+          <!-- Code Conversion Output Cards -->
+          <div class="rounded-2xl border border-slate-800 bg-slate-900 p-5 shadow-xl space-y-3">
+            <div class="flex items-center justify-between">
+              <h3 class="text-xs uppercase tracking-wider font-mono text-slate-400 font-semibold" data-i18n="instant_conversions">Instant CSS Formats</h3>
+              <span class="text-[10px] text-slate-500" data-i18n="click_to_copy">Click card to copy</span>
+            </div>
+
+            <div class="space-y-2" id="format-cards-container">
+              <!-- HEX -->
+              <div class="format-card p-2.5 rounded-xl bg-slate-950 border border-slate-800 hover:border-indigo-500/50 cursor-pointer flex items-center justify-between group transition active:scale-[0.99]" data-copy-type="hex">
+                <div>
+                  <span class="text-[10px] uppercase font-mono text-indigo-400 block">HEX</span>
+                  <span id="code-hex" class="text-xs font-mono font-bold text-slate-200">#4F46E5</span>
+                </div>
+                <button class="px-2 py-1 rounded bg-slate-900 text-[11px] text-slate-400 group-hover:text-indigo-400 group-hover:bg-slate-800 transition">Copy</button>
+              </div>
+
+              <!-- RGB / RGBA -->
+              <div class="format-card p-2.5 rounded-xl bg-slate-950 border border-slate-800 hover:border-indigo-500/50 cursor-pointer flex items-center justify-between group transition active:scale-[0.99]" data-copy-type="rgba">
+                <div>
+                  <span class="text-[10px] uppercase font-mono text-indigo-400 block">RGBA</span>
+                  <span id="code-rgba" class="text-xs font-mono font-bold text-slate-200">rgba(79, 70, 229, 1.0)</span>
+                </div>
+                <button class="px-2 py-1 rounded bg-slate-900 text-[11px] text-slate-400 group-hover:text-indigo-400 group-hover:bg-slate-800 transition">Copy</button>
+              </div>
+
+              <!-- HSL / HSLA -->
+              <div class="format-card p-2.5 rounded-xl bg-slate-950 border border-slate-800 hover:border-indigo-500/50 cursor-pointer flex items-center justify-between group transition active:scale-[0.99]" data-copy-type="hsla">
+                <div>
+                  <span class="text-[10px] uppercase font-mono text-indigo-400 block">HSLA</span>
+                  <span id="code-hsla" class="text-xs font-mono font-bold text-slate-200">hsla(243, 76%, 59%, 1.0)</span>
+                </div>
+                <button class="px-2 py-1 rounded bg-slate-900 text-[11px] text-slate-400 group-hover:text-indigo-400 group-hover:bg-slate-800 transition">Copy</button>
+              </div>
+
+              <!-- CSS Custom Property -->
+              <div class="format-card p-2.5 rounded-xl bg-slate-950 border border-slate-800 hover:border-indigo-500/50 cursor-pointer flex items-center justify-between group transition active:scale-[0.99]" data-copy-type="css-var">
+                <div>
+                  <span class="text-[10px] uppercase font-mono text-indigo-400 block">CSS Variable</span>
+                  <span id="code-css-var" class="text-xs font-mono font-bold text-slate-200">--color-primary: #4F46E5;</span>
+                </div>
+                <button class="px-2 py-1 rounded bg-slate-900 text-[11px] text-slate-400 group-hover:text-indigo-400 group-hover:bg-slate-800 transition">Copy</button>
+              </div>
+
+              <!-- Tailwind Config Snippet -->
+              <div class="format-card p-2.5 rounded-xl bg-slate-950 border border-slate-800 hover:border-indigo-500/50 cursor-pointer flex items-center justify-between group transition active:scale-[0.99]" data-copy-type="tailwind">
+                <div>
+                  <span class="text-[10px] uppercase font-mono text-indigo-400 block">Tailwind Config</span>
+                  <span id="code-tailwind" class="text-xs font-mono font-bold text-slate-200">'primary': '#4F46E5'</span>
+                </div>
+                <button class="px-2 py-1 rounded bg-slate-900 text-[11px] text-slate-400 group-hover:text-indigo-400 group-hover:bg-slate-800 transition">Copy</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- WCAG 2.1 Contrast Calculator Card -->
+          <div class="rounded-2xl border border-slate-800 bg-slate-900 p-5 shadow-xl space-y-3">
+            <h3 class="text-xs uppercase tracking-wider font-mono text-slate-400 font-semibold" data-i18n="accessibility_contrast">WCAG 2.1 Contrast Ratio</h3>
+            
+            <div class="grid grid-cols-2 gap-3">
+              <!-- Contrast against White -->
+              <div class="p-3 rounded-xl bg-white text-slate-950 flex flex-col justify-between">
+                <div>
+                  <span class="text-[10px] uppercase font-bold text-slate-600 block">On White (#FFF)</span>
+                  <span id="contrast-white-ratio" class="text-lg font-mono font-black">5.8:1</span>
+                </div>
+                <div class="flex items-center gap-1.5 mt-2">
+                  <span id="badge-white-normal" class="text-[10px] px-1.5 py-0.5 rounded font-bold bg-emerald-100 text-emerald-800">AA: Pass</span>
+                  <span id="badge-white-large" class="text-[10px] px-1.5 py-0.5 rounded font-bold bg-emerald-100 text-emerald-800">AAA: Pass</span>
+                </div>
+              </div>
+
+              <!-- Contrast against Black -->
+              <div class="p-3 rounded-xl bg-slate-950 border border-slate-800 text-white flex flex-col justify-between">
+                <div>
+                  <span class="text-[10px] uppercase font-bold text-slate-400 block">On Black (#000)</span>
+                  <span id="contrast-black-ratio" class="text-lg font-mono font-black">3.6:1</span>
+                </div>
+                <div class="flex items-center gap-1.5 mt-2">
+                  <span id="badge-black-normal" class="text-[10px] px-1.5 py-0.5 rounded font-bold bg-amber-900/60 text-amber-300">AA: Fail</span>
+                  <span id="badge-black-large" class="text-[10px] px-1.5 py-0.5 rounded font-bold bg-emerald-900/60 text-emerald-300">Large: Pass</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Live Text Preview on Selected Color -->
+            <div id="live-text-preview" class="p-3 rounded-xl border border-white/10 text-center font-medium text-xs transition" style="background-color: #4f46e5; color: #ffffff;">
+              <span id="preview-text-white">Sample Preview Text (White)</span> • 
+              <span id="preview-text-black" style="color: #000000;">Sample Preview Text (Black)</span>
+            </div>
+          </div>
+
+          <!-- Color Blindness Simulator Module Card -->
+          <div id="cvd-simulator-card" class="rounded-2xl border border-slate-800 bg-slate-900 p-5 shadow-xl space-y-3.5">
+            <div class="flex items-center justify-between">
+              <div class="flex items-center gap-2">
+                <span class="text-base">👁️</span>
+                <h3 class="text-xs uppercase tracking-wider font-mono text-slate-400 font-semibold" data-i18n="cvd_module_title">Color Blindness Simulator</h3>
+              </div>
+              <span id="cvd-active-indicator" class="text-[10px] font-mono px-2 py-0.5 rounded bg-indigo-950 text-indigo-300 border border-indigo-800/60">
+                Mode: Normal
+              </span>
+            </div>
+            
+            <p class="text-[11px] text-slate-400 leading-relaxed" data-i18n="cvd_module_desc">
+              Simulate color vision deficiency (CVD) perception on the current color swatch to guarantee accessibility for color-blind users.
+            </p>
+
+            <!-- Simulator Modes Grid -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5" id="cvd-grid-container">
+              <!-- Dynamically populated CVD cards (Protanopia, Deuteranopia, Tritanopia, Achromatopsia) -->
+            </div>
+          </div>
+
+          <!-- Color History & Saved Palette Manager -->
+          <div class="rounded-2xl border border-slate-800 bg-slate-900 p-5 shadow-xl space-y-4">
+            
+            <!-- Recent Colors Bar -->
+            <div>
+              <div class="flex justify-between items-center mb-1.5">
+                <span class="text-xs uppercase tracking-wider font-mono text-slate-400 font-semibold" data-i18n="recent_history">Recent Colors</span>
+                <button id="btn-clear-history" class="text-[10px] text-slate-500 hover:text-slate-300" data-i18n="clear">Clear</button>
+              </div>
+              <div id="history-swatches" class="flex gap-2 overflow-x-auto custom-scrollbar py-1">
+                <!-- Dynamically populated from localStorage -->
+              </div>
+            </div>
+
+            <!-- Custom Saved Palette -->
+            <div>
+              <div class="flex justify-between items-center mb-2">
+                <span class="text-xs uppercase tracking-wider font-mono text-slate-400 font-semibold" data-i18n="saved_palette">Saved Palette</span>
+                <div class="flex gap-2 text-xs">
+                  <button id="btn-export-palette-modal" class="text-indigo-400 hover:text-indigo-300 text-[11px] font-medium" data-i18n="export_btn">Export / Import</button>
+                </div>
+              </div>
+              <div id="saved-palette-swatches" class="grid grid-cols-6 sm:grid-cols-8 gap-2 min-h-[42px] p-2 bg-slate-950 rounded-xl border border-slate-800">
+                <!-- Saved swatches -->
+              </div>
+            </div>
+
+            <!-- Curated Inspirations -->
+            <div>
+              <span class="text-[11px] font-mono text-slate-400 block mb-1.5" data-i18n="curated_palettes">Curated Theme Kits</span>
+              <div class="flex flex-wrap gap-1.5" id="curated-presets-container">
+                <button class="preset-pill px-2.5 py-1 rounded-md text-[11px] bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700" data-colors="#6366F1,#EC4899,#8B5CF6,#10B981,#F59E0B">Tailwind Modern</button>
+                <button class="preset-pill px-2.5 py-1 rounded-md text-[11px] bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700" data-colors="#FF007F,#00F0FF,#FFE600,#7928CA,#1A1A24">Cyberpunk Neon</button>
+                <button class="preset-pill px-2.5 py-1 rounded-md text-[11px] bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700" data-colors="#2A9D8F,#E76F51,#F4A261,#E9C46A,#264653">Warm Mediterranean</button>
+                <button class="preset-pill px-2.5 py-1 rounded-md text-[11px] bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700" data-colors="#0F172A,#334155,#64748B,#94A3B8,#CBD5E1">Slate Monochrome</button>
+              </div>
+            </div>
+          </div>
+
+        </section>
+      </div>
+
+    </main>
+
+    <!-- Global Footer with Analytics & Feedback Slots -->
+    <footer class="mt-auto border-t border-slate-800/80 bg-slate-900/60 text-slate-400 text-xs px-4 py-6 sm:px-6">
+      <div class="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4">
+        
+        <div class="flex items-center gap-3">
+          <div class="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse" title="System Status: Operational"></div>
+          <p><span class="font-semibold text-slate-300">Color Picker &amp; CSS Converter Lab</span> • <span data-i18n="footer_rights">Zero-Dependency Production Suite</span></p>
+        </div>
+
+        <div class="flex items-center flex-wrap gap-4 text-xs">
+          <button id="btn-footer-feedback" class="hover:text-indigo-400 transition" data-i18n="feedback">Feedback &amp; Issues</button>
+          <span>•</span>
+          <button id="btn-footer-share" class="hover:text-indigo-400 transition" data-i18n="share_app">Share Link</button>
+          <span>•</span>
+          <a href="#shortcuts" id="btn-footer-shortcuts" class="hover:text-indigo-400 transition" data-i18n="shortcuts_link">Shortcuts</a>
+          <span>•</span>
+          <span class="text-slate-500 font-mono">Offline PWA Ready</span>
+        </div>
+      </div>
+    </footer>
+
+    <!-- Minimalist Global Toast Notification -->
+    <div id="toast" class="fixed bottom-5 right-5 z-50 transform translate-y-16 opacity-0 pointer-events-none transition-all duration-300 flex items-center gap-2.5 bg-indigo-600 text-white px-4 py-2.5 rounded-xl shadow-2xl border border-indigo-400/40 text-xs font-medium">
+      <span id="toast-icon">✨</span>
+      <span id="toast-message">Copied to clipboard!</span>
+    </div>
+
+    <!-- Modal: Keyboard Shortcuts Cheat Sheet -->
+    <div id="modal-shortcuts" class="fixed inset-0 z-50 bg-black/70 backdrop-blur-sm hidden items-center justify-center p-4">
+      <div class="bg-slate-900 border border-slate-800 rounded-2xl max-w-md w-full p-6 shadow-2xl space-y-4">
+        <div class="flex justify-between items-center border-b border-slate-800 pb-3">
+          <h3 class="text-sm font-bold text-white flex items-center gap-2">
+            <span>⌨️</span> <span data-i18n="shortcuts_title">Keyboard Shortcuts</span>
+          </h3>
+          <button id="btn-close-shortcuts" class="text-slate-400 hover:text-white text-lg">&times;</button>
+        </div>
+
+        <div class="space-y-2.5 text-xs text-slate-300">
+          <div class="flex justify-between items-center p-2 rounded-lg bg-slate-950">
+            <span data-i18n="shortcut_random">Generate random color</span>
+            <kbd class="px-2 py-0.5 rounded bg-slate-800 font-mono text-indigo-300 border border-slate-700">Space</kbd>
+          </div>
+          <div class="flex justify-between items-center p-2 rounded-lg bg-slate-950">
+            <span data-i18n="shortcut_copy_hex">Copy current HEX</span>
+            <kbd class="px-2 py-0.5 rounded bg-slate-800 font-mono text-indigo-300 border border-slate-700">C</kbd>
+          </div>
+          <div class="flex justify-between items-center p-2 rounded-lg bg-slate-950">
+            <span data-i18n="shortcut_copy_rgb">Copy current RGB</span>
+            <kbd class="px-2 py-0.5 rounded bg-slate-800 font-mono text-indigo-300 border border-slate-700">R</kbd>
+          </div>
+          <div class="flex justify-between items-center p-2 rounded-lg bg-slate-950">
+            <span data-i18n="shortcut_copy_hsl">Copy current HSL</span>
+            <kbd class="px-2 py-0.5 rounded bg-slate-800 font-mono text-indigo-300 border border-slate-700">H</kbd>
+          </div>
+          <div class="flex justify-between items-center p-2 rounded-lg bg-slate-950">
+            <span data-i18n="shortcut_save">Save color to palette</span>
+            <kbd class="px-2 py-0.5 rounded bg-slate-800 font-mono text-indigo-300 border border-slate-700">S</kbd>
+          </div>
+          <div class="flex justify-between items-center p-2 rounded-lg bg-slate-950">
+            <span data-i18n="shortcut_toggle">Toggle shortcuts modal</span>
+            <kbd class="px-2 py-0.5 rounded bg-slate-800 font-mono text-indigo-300 border border-slate-700">? / K</kbd>
+          </div>
+        </div>
+
+        <button id="btn-done-shortcuts" class="w-full py-2 bg-indigo-600 hover:bg-indigo-500 rounded-xl text-xs font-semibold text-white transition" data-i18n="close">
+          Close
+        </button>
+      </div>
+    </div>
+
+    <!-- Modal: Palette Export & Import JSON -->
+    <div id="modal-export" class="fixed inset-0 z-50 bg-black/70 backdrop-blur-sm hidden items-center justify-center p-4">
+      <div class="bg-slate-900 border border-slate-800 rounded-2xl max-w-lg w-full p-6 shadow-2xl space-y-4">
+        <div class="flex justify-between items-center border-b border-slate-800 pb-3">
+          <h3 class="text-sm font-bold text-white flex items-center gap-2">
+            <span>📦</span> <span data-i18n="palette_exchange">Palette Export &amp; Import</span>
+          </h3>
+          <button id="btn-close-export" class="text-slate-400 hover:text-white text-lg">&times;</button>
+        </div>
+
+        <div class="space-y-3">
+          <label class="block text-xs font-medium text-slate-300" data-i18n="json_data">JSON Palette Data</label>
+          <textarea id="textarea-palette-json" rows="6" class="w-full bg-slate-950 border border-slate-800 rounded-xl p-3 text-xs font-mono text-indigo-300 focus:outline-none focus:ring-1 focus:ring-indigo-500" placeholder='["#4F46E5", "#10B981", "#EC4899"]'></textarea>
+          
+          <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 text-xs">
+            <button id="btn-copy-json" class="py-2 bg-slate-800 hover:bg-slate-700 rounded-lg text-slate-200 font-medium transition" data-i18n="copy_json">Copy JSON</button>
+            <button id="btn-apply-json" class="py-2 bg-indigo-600 hover:bg-indigo-500 rounded-lg text-white font-medium transition" data-i18n="import_json">Import JSON</button>
+            <button id="btn-export-css" class="py-2 bg-slate-800 hover:bg-slate-700 rounded-lg text-slate-200 font-medium transition" data-i18n="copy_css">Copy CSS</button>
+            <button id="btn-clear-palette" class="py-2 bg-red-950/60 hover:bg-red-900/80 border border-red-800 text-red-300 rounded-lg font-medium transition" data-i18n="clear_palette">Clear All</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Modal: Feedback -->
+    <div id="modal-feedback" class="fixed inset-0 z-50 bg-black/70 backdrop-blur-sm hidden items-center justify-center p-4">
+      <div class="bg-slate-900 border border-slate-800 rounded-2xl max-w-md w-full p-6 shadow-2xl space-y-4">
+        <div class="flex justify-between items-center border-b border-slate-800 pb-3">
+          <h3 class="text-sm font-bold text-white flex items-center gap-2">
+            <span>💬</span> <span data-i18n="feedback_title">Creator Feedback</span>
+          </h3>
+          <button id="btn-close-feedback" class="text-slate-400 hover:text-white text-lg">&times;</button>
+        </div>
+        <p class="text-xs text-slate-300 leading-relaxed" data-i18n="feedback_desc">
+          Have an idea or feature request for the Color Picker &amp; CSS Lab? Leave your message below to help us improve global tooling for creators.
+        </p>
+        <textarea id="feedback-input" rows="4" class="w-full bg-slate-950 border border-slate-800 rounded-xl p-3 text-xs text-slate-200 focus:outline-none focus:ring-1 focus:ring-indigo-500" placeholder="Type feedback or bug report..."></textarea>
+        <button id="btn-submit-feedback" class="w-full py-2 bg-indigo-600 hover:bg-indigo-500 rounded-xl text-xs font-semibold text-white transition" data-i18n="submit_feedback">
+          Send Feedback
+        </button>
+      </div>
+    </div>
+
+    <!-- Pure JavaScript Engine (No External Assets/Libraries) -->
+    <script>
+      (function () {
+        'use strict';
+
+        // 1. 20-Language i18n Translation Dictionary
+        const I18N = {
+          en: {
+            app_title: "Color Picker & CSS Lab",
+            random: "Random",
+            save_color: "Save",
+            eyedropper: "Pick",
+            copy_hex: "Copy HEX",
+            opacity: "Opacity",
+            tints_shades: "Tints & Shades (Lightness 10% - 90%)",
+            harmonies: "Color Harmonies",
+            instant_conversions: "Instant CSS Formats",
+            click_to_copy: "Click card to copy",
+            accessibility_contrast: "WCAG 2.1 Contrast Ratio",
+            recent_history: "Recent Colors",
+            clear: "Clear",
+            saved_palette: "Saved Palette",
+            export_btn: "Export / Import",
+            curated_palettes: "Curated Theme Kits",
+            footer_rights: "Zero-Dependency Production Suite",
+            feedback: "Feedback & Issues",
+            share_app: "Share Link",
+            shortcuts_link: "Shortcuts",
+            shortcuts_title: "Keyboard Shortcuts",
+            shortcut_random: "Generate random color",
+            shortcut_copy_hex: "Copy current HEX",
+            shortcut_copy_rgb: "Copy current RGB",
+            shortcut_copy_hsl: "Copy current HSL",
+            shortcut_save: "Save color to palette",
+            shortcut_toggle: "Toggle shortcuts cheat sheet",
+            close: "Close",
+            palette_exchange: "Palette Export & Import",
+            json_data: "JSON Palette Data",
+            copy_json: "Copy JSON",
+            import_json: "Import JSON",
+            copy_css: "Copy CSS",
+            clear_palette: "Clear All",
+            feedback_title: "Creator Feedback",
+            feedback_desc: "Have an idea or feature request? Let us know!",
+            submit_feedback: "Send Feedback",
+            ad_placeholder: "Developer-targeted tools & web design resources",
+            copied_toast: "Copied to clipboard!",
+            saved_toast: "Added to palette!",
+            link_copied: "Shareable color link copied!",
+            cvd_module_title: "Color Blindness Simulator",
+            cvd_module_desc: "Simulate color vision deficiency (CVD) perception on the current color swatch to guarantee accessibility for color-blind users.",
+            cvd_quick_title: "Vision Mode:",
+            cvd_normal: "Normal",
+            cvd_protanopia: "Protanopia",
+            cvd_deuteranopia: "Deuteranopia",
+            cvd_tritanopia: "Tritanopia",
+            cvd_achromatopsia: "Achromatopsia",
+            cvd_simulating: "Simulating",
+            cvd_reset: "Reset to Normal",
+            cvd_simulate_action: "Simulate on Swatch",
+            cvd_active_badge: "Active on Swatch",
+            cvd_copy_simulated: "Copy simulated HEX"
+          },
+          ko: {
+            app_title: "컬러 피커 & CSS 연구소",
+            random: "랜덤 색상",
+            save_color: "팔레트 저장",
+            eyedropper: "스포이드",
+            copy_hex: "HEX 복사",
+            opacity: "불투명도",
+            tints_shades: "명도 스펙트럼 (10% - 90%)",
+            harmonies: "색상 조화 (Harmonies)",
+            instant_conversions: "실시간 CSS 포맷 변환",
+            click_to_copy: "클릭하여 복사",
+            accessibility_contrast: "WCAG 2.1 명도 대비율",
+            recent_history: "최근 색상 기록",
+            clear: "지우기",
+            saved_palette: "저장된 팔레트",
+            export_btn: "내보내기 / 불러오기",
+            curated_palettes: "추천 테마 킷",
+            footer_rights: "무의존성 글로벌 제작자 도구",
+            feedback: "피드백 및 문의",
+            share_app: "링크 공유",
+            shortcuts_link: "단축키",
+            shortcuts_title: "단축키 모음",
+            shortcut_random: "랜덤 색상 생성",
+            shortcut_copy_hex: "현재 HEX 복사",
+            shortcut_copy_rgb: "현재 RGB 복사",
+            shortcut_copy_hsl: "현재 HSL 복사",
+            shortcut_save: "팔레트에 저장",
+            shortcut_toggle: "단축키 창 열기",
+            close: "닫기",
+            palette_exchange: "팔레트 내보내기 & 불러오기",
+            json_data: "JSON 팔레트 데이터",
+            copy_json: "JSON 복사",
+            import_json: "JSON 가져오기",
+            copy_css: "CSS 복사",
+            clear_palette: "전체 삭제",
+            feedback_title: "사용자 피드백",
+            feedback_desc: "도구 개선 의견이나 아이디어를 남겨주세요!",
+            submit_feedback: "피드백 전송",
+            ad_placeholder: "웹 디자이너와 개발자를 위한 공간",
+            copied_toast: "클립보드에 복사되었습니다!",
+            saved_toast: "팔레트에 추가되었습니다!",
+            link_copied: "공유 링크가 복사되었습니다!",
+            cvd_module_title: "색각 이상 시뮬레이터 (Color Blindness)",
+            cvd_module_desc: "현재 색상을 색각 이상자(제1, 제2, 제3색각이상 및 전색맹)의 시각으로 시뮬레이션하여 접근성을 점검합니다.",
+            cvd_quick_title: "시각 모드:",
+            cvd_normal: "일반 시각",
+            cvd_protanopia: "제1색각 (적색맹)",
+            cvd_deuteranopia: "제2색각 (녹색맹)",
+            cvd_tritanopia: "제3색각 (청색맹)",
+            cvd_achromatopsia: "전색맹 (흑백)",
+            cvd_simulating: "시뮬레이션 중",
+            cvd_reset: "기본값 복구",
+            cvd_simulate_action: "스와치에 시뮬레이션",
+            cvd_active_badge: "적용 중",
+            cvd_copy_simulated: "시뮬레이션 HEX 복사"
+          },
+          ja: {
+            app_title: "カラーピッカー & CSSラボ",
+            random: "ランダム",
+            save_color: "保存",
+            eyedropper: "スポイト",
+            copy_hex: "HEXをコピー",
+            opacity: "不透明度",
+            tints_shades: "明度階調 (10% - 90%)",
+            harmonies: "カラーハーモニー",
+            instant_conversions: "即時CSS変換",
+            click_to_copy: "クリックでコピー",
+            accessibility_contrast: "WCAG 2.1 コントラスト比",
+            recent_history: "最近の色履歴",
+            clear: "クリア",
+            saved_palette: "保存済みパレット",
+            export_btn: "書き出し / 読み込み",
+            curated_palettes: "厳選テーマキット",
+            footer_rights: "ゼロ依存の制作ツール",
+            feedback: "フィードバック",
+            share_app: "リンク共有",
+            shortcuts_link: "ショートカット",
+            shortcuts_title: "キーボードショートカット",
+            shortcut_random: "ランダム色生成",
+            shortcut_copy_hex: "HEXをコピー",
+            shortcut_copy_rgb: "RGBをコピー",
+            shortcut_copy_hsl: "HSLをコピー",
+            shortcut_save: "パレットに保存",
+            shortcut_toggle: "ショートカット一覧",
+            close: "閉じる",
+            palette_exchange: "パレット入出力",
+            json_data: "JSONデータ",
+            copy_json: "JSONコピー",
+            import_json: "JSON読み込み",
+            copy_css: "CSSコピー",
+            clear_palette: "すべて消去",
+            feedback_title: "フィードバック送信",
+            feedback_desc: "改善のためのご意見をお待ちしております。",
+            submit_feedback: "送信する",
+            ad_placeholder: "クリエイター向け広告スペース",
+            copied_toast: "クリップボードにコピーしました！",
+            saved_toast: "パレットに追加しました！",
+            link_copied: "リンクをコピーしました！"
+          },
+          zh: {
+            app_title: "拾色器 & CSS实验室",
+            random: "随机颜色",
+            save_color: "保存",
+            eyedropper: "吸管",
+            copy_hex: "复制HEX",
+            opacity: "不透明度",
+            tints_shades: "色阶明度 (10% - 90%)",
+            harmonies: "色彩搭配和谐",
+            instant_conversions: "实时代码转换",
+            click_to_copy: "点击卡片直接复制",
+            accessibility_contrast: "WCAG 2.1 对比度",
+            recent_history: "最近使用",
+            clear: "清除",
+            saved_palette: "我的调色板",
+            export_btn: "导出 / 导入",
+            curated_palettes: "精选配色",
+            footer_rights: "纯单文件零依赖生产力套件",
+            feedback: "反馈建议",
+            share_app: "分享链接",
+            shortcuts_link: "快捷键",
+            shortcuts_title: "键盘快捷键",
+            shortcut_random: "生成随机色",
+            shortcut_copy_hex: "复制当前HEX",
+            shortcut_copy_rgb: "复制当前RGB",
+            shortcut_copy_hsl: "复制当前HSL",
+            shortcut_save: "保存到调色板",
+            shortcut_toggle: "打开快捷键帮助",
+            close: "关闭",
+            palette_exchange: "调色板导入与导出",
+            json_data: "JSON数据",
+            copy_json: "复制JSON",
+            import_json: "导入JSON",
+            copy_css: "复制CSS",
+            clear_palette: "清空调色板",
+            feedback_title: "用户反馈",
+            feedback_desc: "欢迎提供任何建议与反馈。",
+            submit_feedback: "提交反馈",
+            ad_placeholder: "开发者与设计师专属空间",
+            copied_toast: "已成功复制到剪贴板！",
+            saved_toast: "已添加到调色板！",
+            link_copied: "分享链接已复制！"
+          },
+          es: {
+            app_title: "Selector de Color & Laboratorio CSS",
+            random: "Aleatorio",
+            save_color: "Guardar",
+            eyedropper: "Gotero",
+            copy_hex: "Copiar HEX",
+            opacity: "Opacidad",
+            tints_shades: "Tintes y Sombras (10% - 90%)",
+            harmonies: "Armonías de Color",
+            instant_conversions: "Formatos CSS Instantáneos",
+            click_to_copy: "Clic para copiar",
+            accessibility_contrast: "Contraste WCAG 2.1",
+            recent_history: "Colores Recientes",
+            clear: "Limpiar",
+            saved_palette: "Paleta Guardada",
+            export_btn: "Exportar / Importar",
+            curated_palettes: "Kits de Temas",
+            footer_rights: "Suite Global Sin Dependencias",
+            feedback: "Comentarios",
+            share_app: "Compartir Enlace",
+            shortcuts_link: "Atajos",
+            shortcuts_title: "Atajos de Teclado",
+            shortcut_random: "Generar color aleatorio",
+            shortcut_copy_hex: "Copiar HEX actual",
+            shortcut_copy_rgb: "Copiar RGB actual",
+            shortcut_copy_hsl: "Copiar HSL actual",
+            shortcut_save: "Guardar en paleta",
+            shortcut_toggle: "Ver atajos",
+            close: "Cerrar",
+            palette_exchange: "Exportar / Importar Paleta",
+            json_data: "Datos JSON",
+            copy_json: "Copiar JSON",
+            import_json: "Importar JSON",
+            copy_css: "Copiar CSS",
+            clear_palette: "Borrar Todo",
+            feedback_title: "Comentarios de Creadores",
+            feedback_desc: "¿Tienes ideas para mejorar? ¡Déjanos saber!",
+            submit_feedback: "Enviar Comentarios",
+            ad_placeholder: "Espacio de patrocinio para desarrolladores",
+            copied_toast: "¡Copiado al portapapeles!",
+            saved_toast: "¡Añadido a la paleta!",
+            link_copied: "¡Enlace copiado!"
+          },
+          fr: {
+            app_title: "Sélecteur de Couleur & Labo CSS",
+            random: "Aléatoire",
+            save_color: "Enregistrer",
+            eyedropper: "Pipette",
+            copy_hex: "Copier HEX",
+            opacity: "Opacité",
+            tints_shades: "Teintes et Ombres (10% - 90%)",
+            harmonies: "Harmonies de Couleurs",
+            instant_conversions: "Formats CSS Instantanés",
+            click_to_copy: "Cliquer pour copier",
+            accessibility_contrast: "Contraste WCAG 2.1",
+            recent_history: "Couleurs Récentes",
+            clear: "Effacer",
+            saved_palette: "Palette Enregistrée",
+            export_btn: "Exporter / Importer",
+            curated_palettes: "Palettes Prédéfinies",
+            footer_rights: "Suite de Production Sans Dépendances",
+            feedback: "Retour",
+            share_app: "Partager le Lien",
+            shortcuts_link: "Raccourcis",
+            shortcuts_title: "Raccourcis Clavier",
+            shortcut_random: "Couleur aléatoire",
+            shortcut_copy_hex: "Copier HEX",
+            shortcut_copy_rgb: "Copier RGB",
+            shortcut_copy_hsl: "Copier HSL",
+            shortcut_save: "Sauvegarder",
+            shortcut_toggle: "Afficher les raccourcis",
+            close: "Fermer",
+            palette_exchange: "Export & Import de Palette",
+            json_data: "Données JSON",
+            copy_json: "Copier JSON",
+            import_json: "Importer JSON",
+            copy_css: "Copier CSS",
+            clear_palette: "Tout Effacer",
+            feedback_title: "Vos Retours",
+            feedback_desc: "Une idée d'amélioration ? Faites-le nous savoir.",
+            submit_feedback: "Envoyer",
+            ad_placeholder: "Espace Sponsorisé",
+            copied_toast: "Copié dans le presse-papier !",
+            saved_toast: "Ajouté à la palette !",
+            link_copied: "Lien copié !"
+          },
+          de: {
+            app_title: "Farbwähler & CSS-Labor",
+            random: "Zufall",
+            save_color: "Speichern",
+            eyedropper: "Pipette",
+            copy_hex: "HEX kopieren",
+            opacity: "Deckkraft",
+            tints_shades: "Farbtöne & Nuancen (10% - 90%)",
+            harmonies: "Farbharmonien",
+            instant_conversions: "CSS-Formate",
+            click_to_copy: "Klicken zum Kopieren",
+            accessibility_contrast: "WCAG 2.1 Kontrast",
+            recent_history: "Zuletzt verwendet",
+            clear: "Löschen",
+            saved_palette: "Gespeicherte Palette",
+            export_btn: "Export / Import",
+            curated_palettes: "Kuratierte Themen",
+            footer_rights: "Zero-Dependency Werkzeug für Entwickler",
+            feedback: "Feedback",
+            share_app: "Link teilen",
+            shortcuts_link: "Tastenkürzel",
+            shortcuts_title: "Tastenkürzel Übersicht",
+            shortcut_random: "Zufällige Farbe",
+            shortcut_copy_hex: "HEX kopieren",
+            shortcut_copy_rgb: "RGB kopieren",
+            shortcut_copy_hsl: "HSL kopieren",
+            shortcut_save: "In Palette speichern",
+            shortcut_toggle: "Kürzelliste anzeigen",
+            close: "Schließen",
+            palette_exchange: "Palette Exportieren & Importieren",
+            json_data: "JSON-Daten",
+            copy_json: "JSON kopieren",
+            import_json: "JSON importieren",
+            copy_css: "CSS kopieren",
+            clear_palette: "Alles löschen",
+            feedback_title: "Feedback senden",
+            feedback_desc: "Haben Sie Ideen oder Vorschläge?",
+            submit_feedback: "Absenden",
+            ad_placeholder: "Werbefläche für Entwickler-Tools",
+            copied_toast: "In die Zwischenablage kopiert!",
+            saved_toast: "Zur Palette hinzugefügt!",
+            link_copied: "Link kopiert!"
+          },
+          pt: {
+            app_title: "Seletor de Cores & Lab CSS",
+            random: "Aleatório",
+            save_color: "Salvar",
+            eyedropper: "Conta-gotas",
+            copy_hex: "Copiar HEX",
+            opacity: "Opacidade",
+            tints_shades: "Tons e Sombras (10% - 90%)",
+            harmonies: "Harmonias de Cores",
+            instant_conversions: "Formatos CSS Instantâneos",
+            click_to_copy: "Clique para copiar",
+            accessibility_contrast: "Contraste WCAG 2.1",
+            recent_history: "Cores Recentes",
+            clear: "Limpar",
+            saved_palette: "Paleta Salva",
+            export_btn: "Exportar / Importar",
+            curated_palettes: "Temas Selecionados",
+            footer_rights: "Suíte de Produção Zero Dependências",
+            feedback: "Feedback",
+            share_app: "Compartilhar Link",
+            shortcuts_link: "Atalhos",
+            shortcuts_title: "Atalhos de Teclado",
+            shortcut_random: "Gerar cor aleatória",
+            shortcut_copy_hex: "Copiar HEX atual",
+            shortcut_copy_rgb: "Copiar RGB atual",
+            shortcut_copy_hsl: "Copiar HSL atual",
+            shortcut_save: "Salvar na paleta",
+            shortcut_toggle: "Ver atalhos",
+            close: "Fechar",
+            palette_exchange: "Exportar / Importar Paleta",
+            json_data: "Dados JSON",
+            copy_json: "Copiar JSON",
+            import_json: "Importar JSON",
+            copy_css: "Copiar CSS",
+            clear_palette: "Limpar Tudo",
+            feedback_title: "Enviar Feedback",
+            feedback_desc: "Ajude-nos a aprimorar esta ferramenta.",
+            submit_feedback: "Enviar",
+            ad_placeholder: "Espaço para Anúncios",
+            copied_toast: "Copiado para a área de transferência!",
+            saved_toast: "Adicionado à paleta!",
+            link_copied: "Link copiado!"
+          },
+          ru: {
+            app_title: "Палитра Цветов & CSS Лаб",
+            random: "Случайный",
+            save_color: "Сохранить",
+            eyedropper: "Пипетка",
+            copy_hex: "Копировать HEX",
+            opacity: "Прозрачность",
+            tints_shades: "Оттенки и тона (10% - 90%)",
+            harmonies: "Гармонии цветов",
+            instant_conversions: "CSS форматы",
+            click_to_copy: "Нажмите для копирования",
+            accessibility_contrast: "Контраст WCAG 2.1",
+            recent_history: "Недавние цвета",
+            clear: "Очистить",
+            saved_palette: "Сохранённая палитра",
+            export_btn: "Экспорт / Импорт",
+            curated_palettes: "Готовые темы",
+            footer_rights: "Автономный инструмент без зависимостей",
+            feedback: "Отзывы",
+            share_app: "Поделиться",
+            shortcuts_link: "Горячие клавиши",
+            shortcuts_title: "Горячие клавиши",
+            shortcut_random: "Случайный цвет",
+            shortcut_copy_hex: "Копировать HEX",
+            shortcut_copy_rgb: "Копировать RGB",
+            shortcut_copy_hsl: "Копировать HSL",
+            shortcut_save: "Сохранить в палитру",
+            shortcut_toggle: "Показать подсказки",
+            close: "Закрыть",
+            palette_exchange: "Экспорт и импорт",
+            json_data: "JSON данные",
+            copy_json: "Копировать JSON",
+            import_json: "Импортировать JSON",
+            copy_css: "Копировать CSS",
+            clear_palette: "Очистить всё",
+            feedback_title: "Обратная связь",
+            feedback_desc: "Поделитесь идеями по улучшению инструмента.",
+            submit_feedback: "Отправить",
+            ad_placeholder: "Рекламный блок",
+            copied_toast: "Скопировано в буфер!",
+            saved_toast: "Добавлено в палитру!",
+            link_copied: "Ссылка скопирована!"
+          },
+          it: {
+            app_title: "Selettore Colori & Lab CSS",
+            random: "Casuale",
+            save_color: "Salva",
+            eyedropper: "Contagocce",
+            copy_hex: "Copia HEX",
+            opacity: "Opacità",
+            tints_shades: "Tinte e Sfumature (10% - 90%)",
+            harmonies: "Armonie di Colore",
+            instant_conversions: "Formati CSS Istantanei",
+            click_to_copy: "Clicca per copiare",
+            accessibility_contrast: "Contrasto WCAG 2.1",
+            recent_history: "Colori Recenti",
+            clear: "Cancella",
+            saved_palette: "Palette Salvata",
+            export_btn: "Esporta / Importa",
+            curated_palettes: "Kit Tematici",
+            footer_rights: "Suite di Produzione Senza Dipendenze",
+            feedback: "Feedback",
+            share_app: "Condividi Link",
+            shortcuts_link: "Scorciatoie",
+            shortcuts_title: "Scorciatoie da Tastiera",
+            shortcut_random: "Colore casuale",
+            shortcut_copy_hex: "Copia HEX",
+            shortcut_copy_rgb: "Copia RGB",
+            shortcut_copy_hsl: "Copia HSL",
+            shortcut_save: "Salva nella palette",
+            shortcut_toggle: "Mostra scorciatoie",
+            close: "Chiudi",
+            palette_exchange: "Esporta / Importa Palette",
+            json_data: "Dati JSON",
+            copy_json: "Copia JSON",
+            import_json: "Importa JSON",
+            copy_css: "Copia CSS",
+            clear_palette: "Svuota Tutto",
+            feedback_title: "Invia Feedback",
+            feedback_desc: "Suggerimenti o idee?",
+            submit_feedback: "Invia",
+            ad_placeholder: "Spazio Pubblicitario",
+            copied_toast: "Copiato negli appunti!",
+            saved_toast: "Aggiunto alla palette!",
+            link_copied: "Link copiato!"
+          },
+          vi: {
+            app_title: "Bộ chọn màu & Phòng thí nghiệm CSS",
+            random: "Ngẫu nhiên",
+            save_color: "Lưu",
+            eyedropper: "Ống hút màu",
+            copy_hex: "Sao chép HEX",
+            opacity: "Độ mờ",
+            tints_shades: "Sắc thái & Độ sáng (10% - 90%)",
+            harmonies: "Hài hòa màu sắc",
+            instant_conversions: "Định dạng CSS tức thì",
+            click_to_copy: "Nhấp để sao chép",
+            accessibility_contrast: "Độ tương phản WCAG 2.1",
+            recent_history: "Màu gần đây",
+            clear: "Xóa",
+            saved_palette: "Bảng màu đã lưu",
+            export_btn: "Xuất / Nhập",
+            curated_palettes: "Bộ màu tuyển chọn",
+            footer_rights: "Bộ công cụ độc lập không phụ thuộc",
+            feedback: "Phản hồi",
+            share_app: "Chia sẻ liên kết",
+            shortcuts_link: "Phím tắt",
+            shortcuts_title: "Phím tắt bàn phím",
+            shortcut_random: "Tạo màu ngẫu nhiên",
+            shortcut_copy_hex: "Sao chép mã HEX",
+            shortcut_copy_rgb: "Sao chép mã RGB",
+            shortcut_copy_hsl: "Sao chép mã HSL",
+            shortcut_save: "Lưu vào bảng màu",
+            shortcut_toggle: "Hiện phím tắt",
+            close: "Đóng",
+            palette_exchange: "Xuất / Nhập Bảng màu",
+            json_data: "Dữ liệu JSON",
+            copy_json: "Sao chép JSON",
+            import_json: "Nhập JSON",
+            copy_css: "Sao chép CSS",
+            clear_palette: "Xóa tất cả",
+            feedback_title: "Góp ý từ người dùng",
+            feedback_desc: "Hãy gửi phản hồi để giúp chúng tôi hoàn thiện hơn.",
+            submit_feedback: "Gửi phản hồi",
+            ad_placeholder: "Vị trí quảng cáo",
+            copied_toast: "Đã sao chép vào bộ nhớ tạm!",
+            saved_toast: "Đã thêm vào bảng màu!",
+            link_copied: "Đã sao chép liên kết chia sẻ!"
+          },
+          th: {
+            app_title: "เครื่องมือเลือกสี & ห้องทดลอง CSS",
+            random: "สุ่มสี",
+            save_color: "บันทึก",
+            eyedropper: "ดูดสี",
+            copy_hex: "คัดลอก HEX",
+            opacity: "ความโปร่งใส",
+            tints_shades: "เฉดสีและความสว่าง (10% - 90%)",
+            harmonies: "ความเข้ากันของสี",
+            instant_conversions: "แปลงโค้ด CSS ทันที",
+            click_to_copy: "คลิกเพื่อคัดลอก",
+            accessibility_contrast: "ความคมชัด WCAG 2.1",
+            recent_history: "สีที่ใช้ล่าสุด",
+            clear: "ล้าง",
+            saved_palette: "พาเลทที่บันทึกไว้",
+            export_btn: "ส่งออก / นำเข้า",
+            curated_palettes: "ชุดสีแนะนำ",
+            footer_rights: "เครื่องมือสร้างสรรค์เว็บแบบสแตนด์อโลน",
+            feedback: "ข้อเสนอแนะ",
+            share_app: "แชร์ลิงก์",
+            shortcuts_link: "คีย์ลัด",
+            shortcuts_title: "แป้นพิมพ์ลัด",
+            shortcut_random: "สุ่มสีใหม่",
+            shortcut_copy_hex: "คัดลอก HEX",
+            shortcut_copy_rgb: "คัดลอก RGB",
+            shortcut_copy_hsl: "คัดลอก HSL",
+            shortcut_save: "บันทึกลงพาเลท",
+            shortcut_toggle: "ดูคีย์ลัด",
+            close: "ปิด",
+            palette_exchange: "ส่งออก & นำเข้าพาเลท",
+            json_data: "ข้อมูล JSON",
+            copy_json: "คัดลอก JSON",
+            import_json: "นำเข้า JSON",
+            copy_css: "คัดลอก CSS",
+            clear_palette: "ลบทั้งหมด",
+            feedback_title: "ส่งความคิดเห็น",
+            feedback_desc: "มีข้อเสนอแนะหรือพบปัญหาแจ้งเราได้เลย",
+            submit_feedback: "ส่งข้อความ",
+            ad_placeholder: "พื้นที่โฆษณา",
+            copied_toast: "คัดลอกเรียบร้อยแล้ว!",
+            saved_toast: "บันทึกสีแล้ว!",
+            link_copied: "คัดลอกลิงก์แล้ว!"
+          },
+          id: {
+            app_title: "Pemilih Warna & Lab CSS",
+            random: "Acak",
+            save_color: "Simpan",
+            eyedropper: "Pipet",
+            copy_hex: "Salin HEX",
+            opacity: "Opasitas",
+            tints_shades: "Gradasi & Bayangan (10% - 90%)",
+            harmonies: "Harmoni Warna",
+            instant_conversions: "Format CSS Instan",
+            click_to_copy: "Klik untuk menyalin",
+            accessibility_contrast: "Kontras WCAG 2.1",
+            recent_history: "Warna Terakhir",
+            clear: "Hapus",
+            saved_palette: "Palet Tersimpan",
+            export_btn: "Ekspor / Impor",
+            curated_palettes: "Koleksi Tema",
+            footer_rights: "Rangkaian Alat Web Tanpa Ketergantungan",
+            feedback: "Umpan Balik",
+            share_app: "Bagikan Tautan",
+            shortcuts_link: "Pintasan",
+            shortcuts_title: "Pintasan Keyboard",
+            shortcut_random: "Warna acak",
+            shortcut_copy_hex: "Salin HEX saat ini",
+            shortcut_copy_rgb: "Salin RGB",
+            shortcut_copy_hsl: "Salin HSL",
+            shortcut_save: "Simpan ke palet",
+            shortcut_toggle: "Buka pintasan",
+            close: "Tutup",
+            palette_exchange: "Ekspor & Impor Palet",
+            json_data: "Data JSON",
+            copy_json: "Salin JSON",
+            import_json: "Impor JSON",
+            copy_css: "Salin CSS",
+            clear_palette: "Hapus Semua",
+            feedback_title: "Umpan Balik Pengguna",
+            feedback_desc: "Punya ide atau saran? Kirimkan kepada kami.",
+            submit_feedback: "Kirim",
+            ad_placeholder: "Ruang Iklan",
+            copied_toast: "Berhasil disalin ke papan klip!",
+            saved_toast: "Ditambahkan ke palet!",
+            link_copied: "Tautan berhasil disalin!"
+          },
+          tr: {
+            app_title: "Renk Seçici & CSS Laboratuvarı",
+            random: "Rastgele",
+            save_color: "Kaydet",
+            eyedropper: "Damlalık",
+            copy_hex: "HEX Kopyala",
+            opacity: "Opaklık",
+            tints_shades: "Tonlar ve Gölgeler (10% - 90%)",
+            harmonies: "Renk Uyumları",
+            instant_conversions: "Anlık CSS Formatları",
+            click_to_copy: "Kopyalamak için tıklayın",
+            accessibility_contrast: "WCAG 2.1 Kontrast Oranı",
+            recent_history: "Son Renkler",
+            clear: "Temizle",
+            saved_palette: "Kayıtlı Palet",
+            export_btn: "Dışa / İçe Aktar",
+            curated_palettes: "Özel Paletler",
+            footer_rights: "Sıfır Bağımlılıklı Web Araç Kiti",
+            feedback: "Geri Bildirim",
+            share_app: "Bağlantıyı Paylaş",
+            shortcuts_link: "Kısayollar",
+            shortcuts_title: "Klavye Kısayolları",
+            shortcut_random: "Rastgele renk üret",
+            shortcut_copy_hex: "HEX kodunu kopyala",
+            shortcut_copy_rgb: "RGB kodunu kopyala",
+            shortcut_copy_hsl: "HSL kodunu kopyala",
+            shortcut_save: "Palete kaydet",
+            shortcut_toggle: "Kısayolları göster",
+            close: "Kapat",
+            palette_exchange: "Palet Dışa / İçe Aktarma",
+            json_data: "JSON Verisi",
+            copy_json: "JSON Kopyala",
+            import_json: "JSON İçe Aktar",
+            copy_css: "CSS Kopyala",
+            clear_palette: "Tümünü Temizle",
+            feedback_title: "Kullanıcı Geri Bildirimi",
+            feedback_desc: "Bir öneriniz veya fikriniz mi var?",
+            submit_feedback: "Gönder",
+            ad_placeholder: "Reklam Alanı",
+            copied_toast: "Panoya kopyalandı!",
+            saved_toast: "Palete eklendi!",
+            link_copied: "Bağlantı kopyalandı!"
+          },
+          pl: {
+            app_title: "Próbnik Kolorów & Laboratorium CSS",
+            random: "Losowy",
+            save_color: "Zapisz",
+            eyedropper: "Pipeta",
+            copy_hex: "Kopiuj HEX",
+            opacity: "Krycie",
+            tints_shades: "Odcienie i cienie (10% - 90%)",
+            harmonies: "Harmonie kolorów",
+            instant_conversions: "Formaty CSS",
+            click_to_copy: "Kliknij, aby skopiować",
+            accessibility_contrast: "Kontrast WCAG 2.1",
+            recent_history: "Ostatnie kolory",
+            clear: "Wyczyść",
+            saved_palette: "Zapisana paleta",
+            export_btn: "Eksport / Import",
+            curated_palettes: "Zestawy motywów",
+            footer_rights: "Samodzielne narzędzie bez zależności",
+            feedback: "Opinie",
+            share_app: "Udostępnij link",
+            shortcuts_link: "Skróty",
+            shortcuts_title: "Skróty klawiszowe",
+            shortcut_random: "Losuj kolor",
+            shortcut_copy_hex: "Kopiuj HEX",
+            shortcut_copy_rgb: "Kopiuj RGB",
+            shortcut_copy_hsl: "Kopiuj HSL",
+            shortcut_save: "Zapisz do palety",
+            shortcut_toggle: "Pokaż skróty",
+            close: "Zamknij",
+            palette_exchange: "Eksport i Import Palety",
+            json_data: "Dane JSON",
+            copy_json: "Kopiuj JSON",
+            import_json: "Importuj JSON",
+            copy_css: "Kopiuj CSS",
+            clear_palette: "Wyczyść wszystko",
+            feedback_title: "Prześlij opinię",
+            feedback_desc: "Masz uwagi lub pomysły?",
+            submit_feedback: "Wyślij",
+            ad_placeholder: "Miejsce na reklamę",
+            copied_toast: "Skopiowano do schowka!",
+            saved_toast: "Dodano do palety!",
+            link_copied: "Skopiowano link!"
+          },
+          nl: {
+            app_title: "Kleurkiezer & CSS Lab",
+            random: "Willekeurig",
+            save_color: "Opslaan",
+            eyedropper: "Pipet",
+            copy_hex: "Kopieer HEX",
+            opacity: "Dekking",
+            tints_shades: "Tinten & Schaduwen (10% - 90%)",
+            harmonies: "Kleurharmonieën",
+            instant_conversions: "Directe CSS Formaten",
+            click_to_copy: "Klik om te kopiëren",
+            accessibility_contrast: "WCAG 2.1 Contrast",
+            recent_history: "Recente Kleuren",
+            clear: "Wissen",
+            saved_palette: "Opgeslagen Palet",
+            export_btn: "Exporteer / Importeer",
+            curated_palettes: "Thema Kits",
+            footer_rights: "Zelfstandige Webontwikkeling Suite",
+            feedback: "Feedback",
+            share_app: "Deel Link",
+            shortcuts_link: "Sneltoetsen",
+            shortcuts_title: "Toetsenbordsneltoetsen",
+            shortcut_random: "Willekeurige kleur",
+            shortcut_copy_hex: "Kopieer HEX",
+            shortcut_copy_rgb: "Kopieer RGB",
+            shortcut_copy_hsl: "Kopieer HSL",
+            shortcut_save: "Opslaan in palet",
+            shortcut_toggle: "Sneltoetsen weergeven",
+            close: "Sluiten",
+            palette_exchange: "Palet Export & Import",
+            json_data: "JSON Gegevens",
+            copy_json: "Kopieer JSON",
+            import_json: "Importeer JSON",
+            copy_css: "Kopieer CSS",
+            clear_palette: "Alles wissen",
+            feedback_title: "Feedback Versturen",
+            feedback_desc: "Laat ons weten wat je van de tool vindt.",
+            submit_feedback: "Verzenden",
+            ad_placeholder: "Advertentieruimte",
+            copied_toast: "Gekopieerd naar klembord!",
+            saved_toast: "Aan palet toegevoegd!",
+            link_copied: "Link gekopieerd!"
+          },
+          ar: {
+            app_title: "منتقي الألوان ومختبر CSS",
+            random: "عشوائي",
+            save_color: "حفظ",
+            eyedropper: "أداة القطارة",
+            copy_hex: "نسخ HEX",
+            opacity: "الشفافية",
+            tints_shades: "التدرجات والظلال (10% - 90%)",
+            harmonies: "تناسق الألوان",
+            instant_conversions: "تحويل فوري لصيغ CSS",
+            click_to_copy: "انقر للنسخ",
+            accessibility_contrast: "نسبة تباين WCAG 2.1",
+            recent_history: "الألوان الأخيرة",
+            clear: "مسح",
+            saved_palette: "لوحة الألوان المحفوظة",
+            export_btn: "تصدير / استيراد",
+            curated_palettes: "مجموعات مميزة",
+            footer_rights: "حزمة أدوات ويب مستقلة تماماً",
+            feedback: "الملاحظات",
+            share_app: "مشاركة الرابط",
+            shortcuts_link: "اختصارات",
+            shortcuts_title: "اختصارات لوحة المفاتيح",
+            shortcut_random: "لون عشوائي",
+            shortcut_copy_hex: "نسخ رمز HEX",
+            shortcut_copy_rgb: "نسخ رمز RGB",
+            shortcut_copy_hsl: "نسخ رمز HSL",
+            shortcut_save: "حفظ في اللوحة",
+            shortcut_toggle: "عرض الاختصارات",
+            close: "إغلاق",
+            palette_exchange: "استيراد وتصدير اللوحة",
+            json_data: "بيانات JSON",
+            copy_json: "نسخ JSON",
+            import_json: "استيراد JSON",
+            copy_css: "نسخ CSS",
+            clear_palette: "مسح الكل",
+            feedback_title: "آراء المستخدمين",
+            feedback_desc: "شاركنا باقتراحاتك لتحسين المنصة.",
+            submit_feedback: "إرسال",
+            ad_placeholder: "مساحة إعلانية",
+            copied_toast: "تم النسخ إلى الحافظة!",
+            saved_toast: "تمت الإضافة إلى اللوحة!",
+            link_copied: "تم نسخ رابط المشاركة!"
+          },
+          hi: {
+            app_title: "कलर पिकर और सीएसएस लैब",
+            random: "रैंडम",
+            save_color: "सहेजें",
+            eyedropper: "आईड्रॉपर",
+            copy_hex: "HEX कॉपी करें",
+            opacity: "अपारदर्शिता",
+            tints_shades: "शेड्स और टिंट्स (10% - 90%)",
+            harmonies: "रंग संयोजन (Harmonies)",
+            instant_conversions: "त्वरित सीएसएस प्रारूप",
+            click_to_copy: "कॉपी करने के लिए क्लिक करें",
+            accessibility_contrast: "WCAG 2.1 कंट्रास्ट अनुपात",
+            recent_history: "हाल के रंग",
+            clear: "साफ़ करें",
+            saved_palette: "सहेजी गई पैलेट",
+            export_btn: "निर्यात / आयात",
+            curated_palettes: "थीम संग्रह",
+            footer_rights: "शून्य-निर्भरता उत्पादन सुइट",
+            feedback: "प्रतिक्रिया",
+            share_app: "लिंक साझा करें",
+            shortcuts_link: "शॉर्टकट",
+            shortcuts_title: "कीबोर्ड शॉर्टकट",
+            shortcut_random: "रैंडम रंग बनाएं",
+            shortcut_copy_hex: "वर्तमान HEX कॉपी करें",
+            shortcut_copy_rgb: "वर्तमान RGB कॉपी करें",
+            shortcut_copy_hsl: "वर्तमान HSL कॉपी करें",
+            shortcut_save: "पैलेट में सहेजें",
+            shortcut_toggle: "शॉर्टकट विंडो",
+            close: "बंद करें",
+            palette_exchange: "पैलेट निर्यात और आयात",
+            json_data: "JSON डेटा",
+            copy_json: "JSON कॉपी करें",
+            import_json: "JSON आयात करें",
+            copy_css: "CSS कॉपी करें",
+            clear_palette: "सब मिटाएं",
+            feedback_title: "उपयोगकर्ता प्रतिक्रिया",
+            feedback_desc: "हमें अपने विचार और सुझाव भेजें।",
+            submit_feedback: "भेजें",
+            ad_placeholder: "विज्ञापन स्लॉट",
+            copied_toast: "क्लिपबोर्ड पर कॉपी किया गया!",
+            saved_toast: "पैलेट में जोड़ा गया!",
+            link_copied: "लिंक कॉपी किया गया!"
+          },
+          sv: {
+            app_title: "Färgväljare & CSS Lab",
+            random: "Slumpa",
+            save_color: "Spara",
+            eyedropper: "Pipett",
+            copy_hex: "Kopiera HEX",
+            opacity: "Opacitet",
+            tints_shades: "Nyanser & Skuggor (10% - 90%)",
+            harmonies: "Färgharmonier",
+            instant_conversions: "Direkta CSS-format",
+            click_to_copy: "Klicka för att kopiera",
+            accessibility_contrast: "WCAG 2.1 Kontrastförhållande",
+            recent_history: "Senaste färgerna",
+            clear: "Rensa",
+            saved_palette: "Sparad palett",
+            export_btn: "Exportera / Importera",
+            curated_palettes: "Kurerade färgteman",
+            footer_rights: "Fristående svit utan beroenden",
+            feedback: "Feedback",
+            share_app: "Dela länk",
+            shortcuts_link: "Kortkommandon",
+            shortcuts_title: "Kortkommandon",
+            shortcut_random: "Slumpa fram ny färg",
+            shortcut_copy_hex: "Kopiera HEX",
+            shortcut_copy_rgb: "Kopiera RGB",
+            shortcut_copy_hsl: "Kopiera HSL",
+            shortcut_save: "Spara till palett",
+            shortcut_toggle: "Visa kortkommandon",
+            close: "Stäng",
+            palette_exchange: "Palett Export & Import",
+            json_data: "JSON-data",
+            copy_json: "Kopiera JSON",
+            import_json: "Importera JSON",
+            copy_css: "Kopiera CSS",
+            clear_palette: "Rensa allt",
+            feedback_title: "Lämna feedback",
+            feedback_desc: "Har du förslag på förbättringar?",
+            submit_feedback: "Skicka",
+            ad_placeholder: "Annonsplats",
+            copied_toast: "Kopierat till urklipp!",
+            saved_toast: "Sparat i paletten!",
+            link_copied: "Länk kopierad!"
+          },
+          uk: {
+            app_title: "Палітра кольорів & Лабораторія CSS",
+            random: "Випадковий",
+            save_color: "Зберегти",
+            eyedropper: "Піпетка",
+            copy_hex: "Копіювати HEX",
+            opacity: "Непрозорість",
+            tints_shades: "Відтінки та світлота (10% - 90%)",
+            harmonies: "Гармонії кольорів",
+            instant_conversions: "Миттєві формати CSS",
+            click_to_copy: "Натисніть для копіювання",
+            accessibility_contrast: "Контраст WCAG 2.1",
+            recent_history: "Останні кольори",
+            clear: "Очистити",
+            saved_palette: "Збережена палітра",
+            export_btn: "Експорт / Імпорт",
+            curated_palettes: "Готові набори",
+            footer_rights: "Автономний інструмент без залежностей",
+            feedback: "Зворотний зв'язок",
+            share_app: "Поділитися",
+            shortcuts_link: "Гарячі клавіші",
+            shortcuts_title: "Гарячі клавіші",
+            shortcut_random: "Випадковий колір",
+            shortcut_copy_hex: "Копіювати HEX",
+            shortcut_copy_rgb: "Копіювати RGB",
+            shortcut_copy_hsl: "Копіювати HSL",
+            shortcut_save: "Зберегти в палітру",
+            shortcut_toggle: "Показати клавіші",
+            close: "Закрити",
+            palette_exchange: "Експорт та імпорт",
+            json_data: "Дані JSON",
+            copy_json: "Копіювати JSON",
+            import_json: "Імпортувати JSON",
+            copy_css: "Копіювати CSS",
+            clear_palette: "Очистити все",
+            feedback_title: "Ваш відгук",
+            feedback_desc: "Поділіться ідеями для покращення сервісу.",
+            submit_feedback: "Надіслати",
+            ad_placeholder: "Місце для реклами",
+            copied_toast: "Скопійовано в буфер обміну!",
+            saved_toast: "Додано до палітри!",
+            link_copied: "Посилання скопійовано!"
+          }
+        };
+
+        // 2. State & Persistence Engine
+        const STORAGE_KEYS = {
+          LANG: 'cl_language',
+          PALETTE: 'cl_saved_palette',
+          HISTORY: 'cl_recent_history',
+          THEME: 'cl_app_theme'
+        };
+
+        let state = {
+          r: 79,
+          g: 70,
+          b: 229,
+          a: 1.0,
+          colorBlindMode: 'normal',
+          lang: localStorage.getItem(STORAGE_KEYS.LANG) || 'en',
+          theme: localStorage.getItem(STORAGE_KEYS.THEME) || 'dark',
+          palette: JSON.parse(localStorage.getItem(STORAGE_KEYS.PALETTE) || '["#4F46E5", "#10B981", "#EC4899", "#F59E0B", "#8B5CF6", "#06B6D4"]'),
+          history: JSON.parse(localStorage.getItem(STORAGE_KEYS.HISTORY) || '["#4F46E5", "#3B82F6", "#EF4444", "#10B981"]')
+        };
+
+        // Ensure language is supported
+        if (!I18N[state.lang]) state.lang = 'en';
+
+        // 3. Robust Pure JavaScript Color Mathematics Algorithms
+        function rgbToHex(r, g, b) {
+          const toHex = (c) => Math.max(0, Math.min(255, Math.round(c))).toString(16).padStart(2, '0').toUpperCase();
+          return `#${toHex(r)}${toHex(g)}${toHex(b)}`;
+        }
+
+        function hexToRgb(hex) {
+          hex = hex.replace(/^#/, '').trim();
+          if (hex.length === 3) {
+            hex = hex.split('').map(c => c + c).join('');
+          }
+          if (hex.length !== 6 && hex.length !== 8) return null;
+          const r = parseInt(hex.substring(0, 2), 16);
+          const g = parseInt(hex.substring(2, 4), 16);
+          const b = parseInt(hex.substring(4, 6), 16);
+          let a = 1.0;
+          if (hex.length === 8) {
+            a = Math.round((parseInt(hex.substring(6, 8), 16) / 255) * 100) / 100;
+          }
+          if (isNaN(r) || isNaN(g) || isNaN(b)) return null;
+          return { r, g, b, a };
+        }
+
+        function rgbToHsl(r, g, b) {
+          r /= 255; g /= 255; b /= 255;
+          const max = Math.max(r, g, b), min = Math.min(r, g, b);
+          let h = 0, s = 0, l = (max + min) / 2;
+
+          if (max !== min) {
+            const d = max - min;
+            s = l > 0.5 ? d / (2 - max - min) : d / (max + min);
+            switch (max) {
+              case r: h = (g - b) / d + (g < b ? 6 : 0); break;
+              case g: h = (b - r) / d + 2; break;
+              case b: h = (r - g) / d + 4; break;
+            }
+            h /= 6;
+          }
+          return {
+            h: Math.round(h * 360),
+            s: Math.round(s * 100),
+            l: Math.round(l * 100)
+          };
+        }
+
+        function hslToRgb(h, s, l) {
+          h = (h % 360) / 360;
+          s = Math.max(0, Math.min(100, s)) / 100;
+          l = Math.max(0, Math.min(100, l)) / 100;
+
+          if (s === 0) {
+            const v = Math.round(l * 255);
+            return { r: v, g: v, b: v };
+          }
+
+          const hue2rgb = (p, q, t) => {
+            if (t < 0) t += 1;
+            if (t > 1) t -= 1;
+            if (t < 1/6) return p + (q - p) * 6 * t;
+            if (t < 1/2) return q;
+            if (t < 2/3) return p + (q - p) * (2/3 - t) * 6;
+            return p;
+          };
+
+          const q = l < 0.5 ? l * (1 + s) : l + s - l * s;
+          const p = 2 * l - q;
+          return {
+            r: Math.round(hue2rgb(p, q, h + 1/3) * 255),
+            g: Math.round(hue2rgb(p, q, h) * 255),
+            b: Math.round(hue2rgb(p, q, h - 1/3) * 255)
+          };
+        }
+
+        // Relative Luminance & WCAG 2.1 Contrast Calculation
+        function getRelativeLuminance(r, g, b) {
+          const a = [r, g, b].map(v => {
+            v /= 255;
+            return v <= 0.03928 ? v / 12.92 : Math.pow((v + 0.055) / 1.055, 2.4);
+          });
+          return 0.2126 * a[0] + 0.7152 * a[1] + 0.0722 * a[2];
+        }
+
+        function getContrastRatio(lum1, lum2) {
+          const l1 = Math.max(lum1, lum2);
+          const l2 = Math.min(lum1, lum2);
+          return (l1 + 0.05) / (l2 + 0.05);
+        }
+
+        // Color Vision Deficiency (CVD) Simulation Matrices (Machado et al. & standard linearized models)
+        const CVD_CONFIG = {
+          protanopia: {
+            name: "Protanopia",
+            desc: "Red-blind (L-cone absent, ~1% males)",
+            type: "Red-blind",
+            matrix: [
+              [0.56667, 0.43333, 0.0],
+              [0.55833, 0.44167, 0.0],
+              [0.0,     0.24167, 0.75833]
+            ]
+          },
+          deuteranopia: {
+            name: "Deuteranopia",
+            desc: "Green-blind (M-cone absent, ~1% males, 5% deuteranomaly)",
+            type: "Green-blind",
+            matrix: [
+              [0.625, 0.375, 0.0],
+              [0.70,  0.30,  0.0],
+              [0.0,   0.30,  0.70]
+            ]
+          },
+          tritanopia: {
+            name: "Tritanopia",
+            desc: "Blue-blind (S-cone absent, ~0.003% population)",
+            type: "Blue-blind",
+            matrix: [
+              [0.95, 0.05,  0.0],
+              [0.0,  0.43333, 0.56667],
+              [0.0,  0.475,   0.525]
+            ]
+          },
+          achromatopsia: {
+            name: "Achromatopsia",
+            desc: "Monochromacy (complete absence of color perception)",
+            type: "Monochrome",
+            matrix: [
+              [0.299, 0.587, 0.114],
+              [0.299, 0.587, 0.114],
+              [0.299, 0.587, 0.114]
+            ]
+          }
+        };
+
+        function simulateCVD(r, g, b, mode) {
+          if (!mode || mode === 'normal' || !CVD_CONFIG[mode]) {
+            return { r, g, b, hex: rgbToHex(r, g, b) };
+          }
+          const m = CVD_CONFIG[mode].matrix;
+          const simR = Math.max(0, Math.min(255, Math.round(r * m[0][0] + g * m[0][1] + b * m[0][2])));
+          const simG = Math.max(0, Math.min(255, Math.round(r * m[1][0] + g * m[1][1] + b * m[1][2])));
+          const simB = Math.max(0, Math.min(255, Math.round(r * m[2][0] + g * m[2][1] + b * m[2][2])));
+          return {
+            r: simR,
+            g: simG,
+            b: simB,
+            hex: rgbToHex(simR, simG, simB)
+          };
+        }
+
+        function capitalize(str) {
+          if (!str) return '';
+          return str.charAt(0).toUpperCase() + str.slice(1);
+        }
+
+        // 4. UI Elements Cache
+        const DOM = {
+          html: document.documentElement,
+          langSelector: document.getElementById('lang-selector'),
+          themeSelector: document.getElementById('theme-selector'),
+          headerDot: document.getElementById('header-color-dot'),
+          masterSwatch: document.getElementById('master-swatch'),
+          swatchHex: document.getElementById('swatch-hex-display'),
+          swatchSub: document.getElementById('swatch-sub-display'),
+          nativePicker: document.getElementById('native-color-picker'),
+          inputHex: document.getElementById('input-hex'),
+          inputRgbStr: document.getElementById('input-rgb-string'),
+          inputAlpha: document.getElementById('input-alpha'),
+          labelAlphaVal: document.getElementById('label-alpha-val'),
+          
+          sliderR: document.getElementById('slider-r'),
+          sliderG: document.getElementById('slider-g'),
+          sliderB: document.getElementById('slider-b'),
+          numR: document.getElementById('num-r'),
+          numG: document.getElementById('num-g'),
+          numB: document.getElementById('num-b'),
+
+          sliderH: document.getElementById('slider-h'),
+          sliderS: document.getElementById('slider-s'),
+          sliderL: document.getElementById('slider-l'),
+          numH: document.getElementById('num-h'),
+          numS: document.getElementById('num-s'),
+          numL: document.getElementById('num-l'),
+
+          tabRgb: document.getElementById('tab-btn-rgb'),
+          tabHsl: document.getElementById('tab-btn-hsl'),
+          rgbContainer: document.getElementById('container-rgb-sliders'),
+          hslContainer: document.getElementById('container-hsl-sliders'),
+
+          tintsShades: document.getElementById('tints-shades-container'),
+          harmoniesGrid: document.getElementById('harmonies-grid'),
+
+          codeHex: document.getElementById('code-hex'),
+          codeRgba: document.getElementById('code-rgba'),
+          codeHsla: document.getElementById('code-hsla'),
+          codeCssVar: document.getElementById('code-css-var'),
+          codeTailwind: document.getElementById('code-tailwind'),
+
+          contrastBadgeTop: document.getElementById('contrast-badge-top'),
+          contrastWhiteRatio: document.getElementById('contrast-white-ratio'),
+          contrastBlackRatio: document.getElementById('contrast-black-ratio'),
+          badgeWhiteNormal: document.getElementById('badge-white-normal'),
+          badgeWhiteLarge: document.getElementById('badge-white-large'),
+          badgeBlackNormal: document.getElementById('badge-black-normal'),
+          badgeBlackLarge: document.getElementById('badge-black-large'),
+          livePreview: document.getElementById('live-text-preview'),
+
+          historySwatches: document.getElementById('history-swatches'),
+          savedSwatches: document.getElementById('saved-palette-swatches'),
+
+          toast: document.getElementById('toast'),
+          toastMsg: document.getElementById('toast-message'),
+
+          modalShortcuts: document.getElementById('modal-shortcuts'),
+          modalExport: document.getElementById('modal-export'),
+          modalFeedback: document.getElementById('modal-feedback'),
+          textareaJson: document.getElementById('textarea-palette-json'),
+          btnEyedropper: document.getElementById('btn-eyedropper'),
+
+          swatchCvdBadge: document.getElementById('swatch-cvd-badge'),
+          swatchCvdLabel: document.getElementById('swatch-cvd-label'),
+          btnResetCvdSwatch: document.getElementById('btn-reset-cvd-swatch'),
+          swatchCvdPills: document.getElementById('swatch-cvd-pills'),
+          cvdActiveIndicator: document.getElementById('cvd-active-indicator'),
+          cvdGridContainer: document.getElementById('cvd-grid-container')
+        };
+
+        // 5. Toast Notification System
+        let toastTimeout = null;
+        function showToast(msg, icon = '✨') {
+          if (!DOM.toast) return;
+          DOM.toastMsg.textContent = msg;
+          document.getElementById('toast-icon').textContent = icon;
+          DOM.toast.classList.remove('translate-y-16', 'opacity-0', 'pointer-events-none');
+          DOM.toast.classList.add('translate-y-0', 'opacity-100');
+
+          if (toastTimeout) clearTimeout(toastTimeout);
+          toastTimeout = setTimeout(() => {
+            DOM.toast.classList.add('translate-y-16', 'opacity-0', 'pointer-events-none');
+            DOM.toast.classList.remove('translate-y-0', 'opacity-100');
+          }, 2400);
+        }
+
+        function copyText(text, successMsg) {
+          if (navigator.clipboard && navigator.clipboard.writeText) {
+            navigator.clipboard.writeText(text).then(() => {
+              showToast(successMsg || I18N[state.lang].copied_toast, '📋');
+            }).catch(() => fallbackCopy(text, successMsg));
+          } else {
+            fallbackCopy(text, successMsg);
+          }
+        }
+
+        function fallbackCopy(text, successMsg) {
+          const ta = document.createElement('textarea');
+          ta.value = text;
+          ta.style.position = 'fixed';
+          ta.style.opacity = '0';
+          document.body.appendChild(ta);
+          ta.select();
+          try {
+            document.execCommand('copy');
+            showToast(successMsg || I18N[state.lang].copied_toast, '📋');
+          } catch (e) {
+            showToast('Unable to copy', '⚠️');
+          }
+          document.body.removeChild(ta);
+        }
+
+        // 6. UI Synchronization & Render
+        function updateUI(source) {
+          const { r, g, b, a } = state;
+          const hex = rgbToHex(r, g, b);
+          const hsl = rgbToHsl(r, g, b);
+          const rgbaStr = `rgba(${r}, ${g}, ${b}, ${a})`;
+          const hslaStr = `hsla(${hsl.h}, ${hsl.s}%, ${hsl.l}%, ${a})`;
+
+          // Master swatch & Displays (Visual simulation transformation if active)
+          if (state.colorBlindMode && state.colorBlindMode !== 'normal') {
+            const sim = simulateCVD(r, g, b, state.colorBlindMode);
+            const simRgba = `rgba(${sim.r}, ${sim.g}, ${sim.b}, ${a})`;
+            DOM.masterSwatch.style.backgroundColor = simRgba;
+            DOM.swatchHex.textContent = sim.hex;
+            DOM.swatchSub.textContent = `Simulated: ${capitalize(state.colorBlindMode)} • Original: ${hex}`;
+
+            if (DOM.swatchCvdBadge) {
+              DOM.swatchCvdBadge.classList.remove('hidden');
+              DOM.swatchCvdBadge.classList.add('flex');
+            }
+            if (DOM.swatchCvdLabel) {
+              DOM.swatchCvdLabel.textContent = `Simulating: ${capitalize(state.colorBlindMode)}`;
+            }
+
+            if (DOM.cvdActiveIndicator) {
+              DOM.cvdActiveIndicator.textContent = `Active: ${capitalize(state.colorBlindMode)}`;
+              DOM.cvdActiveIndicator.className = 'text-[10px] font-mono px-2 py-0.5 rounded bg-amber-950 text-amber-300 border border-amber-800/60 font-bold animate-pulse';
+            }
+
+            DOM.livePreview.style.backgroundColor = simRgba;
+          } else {
+            DOM.masterSwatch.style.backgroundColor = rgbaStr;
+            DOM.swatchHex.textContent = hex;
+            DOM.swatchSub.textContent = `rgba(${r}, ${g}, ${b}, ${a})`;
+
+            if (DOM.swatchCvdBadge) {
+              DOM.swatchCvdBadge.classList.add('hidden');
+              DOM.swatchCvdBadge.classList.remove('flex');
+            }
+
+            if (DOM.cvdActiveIndicator) {
+              DOM.cvdActiveIndicator.textContent = 'Mode: Normal';
+              DOM.cvdActiveIndicator.className = 'text-[10px] font-mono px-2 py-0.5 rounded bg-indigo-950 text-indigo-300 border border-indigo-800/60';
+            }
+
+            DOM.livePreview.style.backgroundColor = rgbaStr;
+          }
+
+          DOM.headerDot.style.backgroundColor = hex;
+          document.getElementById('meta-theme-color').setAttribute('content', hex);
+
+          // Direct Inputs sync
+          if (source !== 'nativePicker') DOM.nativePicker.value = hex;
+          if (source !== 'inputHex') DOM.inputHex.value = hex;
+          if (source !== 'inputRgbStr') DOM.inputRgbStr.value = `${r}, ${g}, ${b}`;
+          if (source !== 'inputAlpha') {
+            DOM.inputAlpha.value = Math.round(a * 100);
+            DOM.labelAlphaVal.textContent = `${Math.round(a * 100)}%`;
+          }
+
+          // RGB Sliders & Numbers
+          if (source !== 'rgbSliders') {
+            DOM.sliderR.value = r; DOM.numR.value = r;
+            DOM.sliderG.value = g; DOM.numG.value = g;
+            DOM.sliderB.value = b; DOM.numB.value = b;
+          }
+
+          // HSL Sliders & Numbers
+          if (source !== 'hslSliders') {
+            DOM.sliderH.value = hsl.h; DOM.numH.value = hsl.h;
+            DOM.sliderS.value = hsl.s; DOM.numS.value = hsl.s;
+            DOM.sliderL.value = hsl.l; DOM.numL.value = hsl.l;
+          }
+
+          // Code format cards (always display original accurate values)
+          DOM.codeHex.textContent = hex;
+          DOM.codeRgba.textContent = rgbaStr;
+          DOM.codeHsla.textContent = hslaStr;
+          DOM.codeCssVar.textContent = `--color-primary: ${hex};`;
+          DOM.codeTailwind.textContent = `'primary': '${hex}'`;
+
+          // WCAG Contrast Checks
+          const curLum = getRelativeLuminance(r, g, b);
+          const whiteLum = 1.0;
+          const blackLum = 0.0;
+          const whiteRatio = getContrastRatio(curLum, whiteLum);
+          const blackRatio = getContrastRatio(curLum, blackLum);
+
+          DOM.contrastWhiteRatio.textContent = `${whiteRatio.toFixed(1)}:1`;
+          DOM.contrastBlackRatio.textContent = `${blackRatio.toFixed(1)}:1`;
+
+          // Badges for White
+          updateBadge(DOM.badgeWhiteNormal, whiteRatio >= 4.5, 'AA');
+          updateBadge(DOM.badgeWhiteLarge, whiteRatio >= 7.0, 'AAA');
+
+          // Badges for Black
+          updateBadge(DOM.badgeBlackNormal, blackRatio >= 4.5, 'AA');
+          updateBadge(DOM.badgeBlackLarge, blackRatio >= 3.0, 'Large');
+
+          // Top badge on master swatch
+          if (whiteRatio >= 4.5 || blackRatio >= 4.5) {
+            DOM.contrastBadgeTop.textContent = 'WCAG AA: Pass';
+            DOM.contrastBadgeTop.className = 'px-2.5 py-1 rounded-md text-xs font-mono font-bold bg-emerald-950/80 text-emerald-300 backdrop-blur-sm border border-emerald-500/30';
+          } else {
+            DOM.contrastBadgeTop.textContent = 'WCAG AA: Low';
+            DOM.contrastBadgeTop.className = 'px-2.5 py-1 rounded-md text-xs font-mono font-bold bg-amber-950/80 text-amber-300 backdrop-blur-sm border border-amber-500/30';
+          }
+
+          // Render Tints & Shades
+          renderTintsAndShades(hsl);
+
+          // Render Harmonies
+          renderHarmonies(hsl);
+
+          // Render Color Blindness Simulator Module & Quick Mode Pills
+          renderCVDModule(r, g, b);
+          updateCvdPills();
+
+          // Shareable State URL Hash sync (#color=4F46E5)
+          const cleanHex = hex.replace('#', '');
+          if (window.location.hash !== `#color=${cleanHex}`) {
+            history.replaceState(null, '', `#color=${cleanHex}`);
+          }
+        }
+
+        function updateBadge(el, isPass, standard) {
+          if (isPass) {
+            el.textContent = `${standard}: Pass`;
+            el.className = 'text-[10px] px-1.5 py-0.5 rounded font-bold bg-emerald-900/60 text-emerald-300 border border-emerald-700/50';
+          } else {
+            el.textContent = `${standard}: Fail`;
+            el.className = 'text-[10px] px-1.5 py-0.5 rounded font-bold bg-rose-950/60 text-rose-300 border border-rose-800/50';
+          }
+        }
+
+        // 7. Tints & Shades Generator
+        function renderTintsAndShades(hsl) {
+          DOM.tintsShades.innerHTML = '';
+          const steps = [10, 20, 30, 40, 50, 60, 70, 80, 90];
+          steps.forEach(lightness => {
+            const stepRgb = hslToRgb(hsl.h, hsl.s, lightness);
+            const stepHex = rgbToHex(stepRgb.r, stepRgb.g, stepRgb.b);
+            const cell = document.createElement('button');
+            cell.className = 'h-full transition hover:scale-105 active:scale-95 focus:outline-none relative group';
+            cell.style.backgroundColor = stepHex;
+            cell.title = `${stepHex} (${lightness}%)`;
+            cell.onclick = () => setColorFromRgb(stepRgb.r, stepRgb.g, stepRgb.b);
+            DOM.tintsShades.appendChild(cell);
+          });
+        }
+
+        // 8. Color Harmonies Generator
+        function renderHarmonies(hsl) {
+          DOM.harmoniesGrid.innerHTML = '';
+          const harmonyTypes = [
+            { name: 'Complementary', angles: [180] },
+            { name: 'Analogous', angles: [-30, 30] },
+            { name: 'Triadic', angles: [120, 240] },
+            { name: 'Split-Comp', angles: [150, 210] },
+            { name: 'Tetradic', angles: [90, 180, 270] },
+            { name: 'Monochrome', deltaL: [-25, 25] }
+          ];
+
+          harmonyTypes.forEach(h => {
+            const card = document.createElement('div');
+            card.className = 'p-2.5 rounded-xl bg-slate-950 border border-slate-800 space-y-2';
+            
+            const title = document.createElement('div');
+            title.className = 'text-[10px] font-mono text-slate-400 font-semibold';
+            title.textContent = h.name;
+            card.appendChild(title);
+
+            const swatchRow = document.createElement('div');
+            swatchRow.className = 'flex gap-1 h-7 rounded-md overflow-hidden';
+
+            const colors = [];
+            if (h.angles) {
+              h.angles.forEach(a => {
+                const newH = (hsl.h + a + 360) % 360;
+                const rgb = hslToRgb(newH, hsl.s, hsl.l);
+                colors.push(rgbToHex(rgb.r, rgb.g, rgb.b));
+              });
+            } else if (h.deltaL) {
+              h.deltaL.forEach(dL => {
+                const newL = Math.max(10, Math.min(90, hsl.l + dL));
+                const rgb = hslToRgb(hsl.h, hsl.s, newL);
+                colors.push(rgbToHex(rgb.r, rgb.g, rgb.b));
+              });
+            }
+
+            colors.forEach(colHex => {
+              const btn = document.createElement('button');
+              btn.className = 'flex-1 h-full hover:opacity-90 transition active:scale-95 border border-black/20';
+              btn.style.backgroundColor = colHex;
+              btn.title = `Select ${colHex}`;
+              btn.onclick = () => setColorFromHex(colHex);
+              swatchRow.appendChild(btn);
+            });
+
+            card.appendChild(swatchRow);
+            DOM.harmoniesGrid.appendChild(card);
+          });
+        }
+
+        // 9. Color Blindness Simulator Engine
+        function toggleColorBlindMode(mode) {
+          if (state.colorBlindMode === mode && mode !== 'normal') {
+            state.colorBlindMode = 'normal';
+          } else {
+            state.colorBlindMode = mode;
+          }
+          updateUI();
+          if (state.colorBlindMode === 'normal') {
+            showToast('Vision Mode: Normal', '👁️');
+          } else {
+            showToast(`Simulating ${capitalize(state.colorBlindMode)} on Swatch`, '👁️');
+          }
+        }
+
+        function updateCvdPills() {
+          const currentMode = state.colorBlindMode || 'normal';
+          document.querySelectorAll('.cvd-pill-btn').forEach(btn => {
+            const mode = btn.getAttribute('data-cvd');
+            if (mode === currentMode) {
+              btn.className = 'cvd-pill-btn px-2.5 py-1 rounded-lg text-xs font-medium transition active:scale-95 bg-indigo-600 text-white font-mono shadow-md border border-indigo-400';
+            } else {
+              btn.className = 'cvd-pill-btn px-2.5 py-1 rounded-lg text-xs font-medium transition active:scale-95 bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700 font-mono';
+            }
+          });
+        }
+
+        function renderCVDModule(r, g, b) {
+          if (!DOM.cvdGridContainer) return;
+          DOM.cvdGridContainer.innerHTML = '';
+
+          const modes = [
+            { key: 'protanopia', name: 'Protanopia', desc: 'Red-blind (L-cone deficiency)', share: '~1.3% pop.' },
+            { key: 'deuteranopia', name: 'Deuteranopia', desc: 'Green-blind (M-cone deficiency)', share: '~5.3% pop.' },
+            { key: 'tritanopia', name: 'Tritanopia', desc: 'Blue-blind (S-cone deficiency)', share: '~0.02% pop.' },
+            { key: 'achromatopsia', name: 'Achromatopsia', desc: 'Monochromacy (complete color blindness)', share: '~0.003% pop.' }
+          ];
+
+          const dict = I18N[state.lang] || I18N.en;
+
+          modes.forEach(modeInfo => {
+            const sim = simulateCVD(r, g, b, modeInfo.key);
+            const isActive = state.colorBlindMode === modeInfo.key;
+
+            const card = document.createElement('div');
+            card.className = `p-3 rounded-xl border transition cursor-pointer relative flex flex-col justify-between ${
+              isActive 
+                ? 'bg-indigo-950/70 border-indigo-500 shadow-md ring-1 ring-indigo-500' 
+                : 'bg-slate-950/70 hover:bg-slate-800/80 border-slate-800 hover:border-slate-700'
+            }`;
+
+            const topRow = document.createElement('div');
+            topRow.className = 'flex items-center justify-between mb-2';
+
+            const nameWrap = document.createElement('div');
+            nameWrap.className = 'flex items-center gap-1.5';
+            
+            const titleEl = document.createElement('span');
+            titleEl.className = 'font-bold text-xs text-white';
+            titleEl.textContent = dict[`cvd_${modeInfo.key}`] || modeInfo.name;
+
+            const tagEl = document.createElement('span');
+            tagEl.className = 'text-[9px] px-1.5 py-0.5 rounded font-mono bg-slate-800 text-slate-400 border border-slate-700';
+            tagEl.textContent = modeInfo.share;
+
+            nameWrap.appendChild(titleEl);
+            nameWrap.appendChild(tagEl);
+
+            const activeBadge = document.createElement('span');
+            if (isActive) {
+              activeBadge.className = 'text-[10px] px-1.5 py-0.5 rounded font-bold font-mono bg-amber-400 text-slate-950 border border-amber-300';
+              activeBadge.textContent = dict.cvd_active_badge || 'Active on Swatch';
+            } else {
+              activeBadge.className = 'text-[10px] px-1.5 py-0.5 rounded font-mono text-slate-400 bg-slate-900 border border-slate-800';
+              activeBadge.textContent = 'Preview';
+            }
+
+            topRow.appendChild(nameWrap);
+            topRow.appendChild(activeBadge);
+
+            // Swatch comparison row
+            const previewRow = document.createElement('div');
+            previewRow.className = 'flex items-center gap-2.5 mb-2.5';
+
+            const simSwatch = document.createElement('div');
+            simSwatch.className = 'h-9 w-14 rounded-lg border border-white/20 shadow-inner flex-shrink-0 transition-transform';
+            simSwatch.style.backgroundColor = sim.hex;
+            simSwatch.title = `Simulated ${modeInfo.name}: ${sim.hex}`;
+
+            const colorDetails = document.createElement('div');
+            colorDetails.className = 'flex-1 min-w-0';
+
+            const simHexText = document.createElement('div');
+            simHexText.className = 'font-mono text-xs font-bold text-slate-200 tracking-wider flex items-center justify-between';
+            simHexText.innerHTML = `<span>${sim.hex}</span><span class="text-[10px] font-normal text-slate-400">rgb(${sim.r}, ${sim.g}, ${sim.b})</span>`;
+
+            const simDesc = document.createElement('p');
+            simDesc.className = 'text-[10px] text-slate-400 truncate';
+            simDesc.textContent = modeInfo.desc;
+
+            colorDetails.appendChild(simHexText);
+            colorDetails.appendChild(simDesc);
+
+            previewRow.appendChild(simSwatch);
+            previewRow.appendChild(colorDetails);
+
+            // Action row
+            const actionRow = document.createElement('div');
+            actionRow.className = 'flex items-center justify-between pt-2 border-t border-white/5 text-[11px]';
+
+            const toggleBtn = document.createElement('button');
+            toggleBtn.className = `px-2.5 py-1 rounded text-[10px] font-semibold transition active:scale-95 ${
+              isActive 
+                ? 'bg-amber-400 text-slate-950 hover:bg-amber-300' 
+                : 'bg-indigo-600/80 hover:bg-indigo-600 text-white'
+            }`;
+            toggleBtn.textContent = isActive ? (dict.cvd_reset || 'Reset to Normal') : (dict.cvd_simulate_action || 'Simulate on Swatch');
+            toggleBtn.addEventListener('click', (e) => {
+              e.stopPropagation();
+              toggleColorBlindMode(modeInfo.key);
+            });
+
+            const copySimBtn = document.createElement('button');
+            copySimBtn.className = 'text-[10px] font-mono text-slate-400 hover:text-white transition flex items-center gap-1 active:scale-95';
+            copySimBtn.innerHTML = `<span>📋</span> <span>${sim.hex}</span>`;
+            copySimBtn.title = dict.cvd_copy_simulated || `Copy simulated HEX (${sim.hex})`;
+            copySimBtn.addEventListener('click', (e) => {
+              e.stopPropagation();
+              copyText(sim.hex, `Copied simulated ${modeInfo.name} HEX (${sim.hex})`);
+            });
+
+            actionRow.appendChild(toggleBtn);
+            actionRow.appendChild(copySimBtn);
+
+            card.appendChild(topRow);
+            card.appendChild(previewRow);
+            card.appendChild(actionRow);
+
+            card.addEventListener('click', () => {
+              toggleColorBlindMode(modeInfo.key);
+            });
+
+            DOM.cvdGridContainer.appendChild(card);
+          });
+        }
+
+        // 10. Setter Helpers
+        function setColorFromRgb(r, g, b, source) {
+          state.r = Math.max(0, Math.min(255, Math.round(r)));
+          state.g = Math.max(0, Math.min(255, Math.round(g)));
+          state.b = Math.max(0, Math.min(255, Math.round(b)));
+          recordHistory(rgbToHex(state.r, state.g, state.b));
+          updateUI(source);
+        }
+
+        function setColorFromHex(hex, source) {
+          const parsed = hexToRgb(hex);
+          if (parsed) {
+            state.r = parsed.r;
+            state.g = parsed.g;
+            state.b = parsed.b;
+            if (parsed.a !== undefined) state.a = parsed.a;
+            recordHistory(rgbToHex(state.r, state.g, state.b));
+            updateUI(source);
+          }
+        }
+
+        function recordHistory(hex) {
+          if (!state.history.includes(hex)) {
+            state.history.unshift(hex);
+            if (state.history.length > 14) state.history.pop();
+            localStorage.setItem(STORAGE_KEYS.HISTORY, JSON.stringify(state.history));
+            renderHistory();
+          }
+        }
+
+        function renderHistory() {
+          DOM.historySwatches.innerHTML = '';
+          state.history.forEach(hex => {
+            const btn = document.createElement('button');
+            btn.className = 'w-7 h-7 rounded-lg shrink-0 border border-white/20 transition hover:scale-110 active:scale-95 shadow-sm';
+            btn.style.backgroundColor = hex;
+            btn.title = hex;
+            btn.onclick = () => setColorFromHex(hex);
+            DOM.historySwatches.appendChild(btn);
+          });
+        }
+
+        function renderSavedPalette() {
+          DOM.savedSwatches.innerHTML = '';
+          if (state.palette.length === 0) {
+            DOM.savedSwatches.innerHTML = '<span class="text-[11px] text-slate-500 italic col-span-full py-1 text-center">No colors saved yet. Press "Save" or key S.</span>';
+            return;
+          }
+          state.palette.forEach((hex, idx) => {
+            const wrap = document.createElement('div');
+            wrap.className = 'relative group aspect-square rounded-lg overflow-hidden border border-white/10';
+            
+            const btn = document.createElement('button');
+            btn.className = 'w-full h-full transition group-hover:scale-105';
+            btn.style.backgroundColor = hex;
+            btn.title = hex;
+            btn.onclick = () => setColorFromHex(hex);
+            wrap.appendChild(btn);
+
+            // Delete mini button
+            const delBtn = document.createElement('button');
+            delBtn.className = 'absolute top-0 right-0 bg-black/60 text-white text-[10px] w-4 h-4 hidden group-hover:flex items-center justify-center rounded-bl hover:bg-rose-600 transition';
+            delBtn.innerHTML = '&times;';
+            delBtn.title = 'Remove';
+            delBtn.onclick = (e) => {
+              e.stopPropagation();
+              state.palette.splice(idx, 1);
+              localStorage.setItem(STORAGE_KEYS.PALETTE, JSON.stringify(state.palette));
+              renderSavedPalette();
+            };
+            wrap.appendChild(delBtn);
+
+            DOM.savedSwatches.appendChild(wrap);
+          });
+        }
+
+        function generateRandomColor() {
+          const r = Math.floor(Math.random() * 256);
+          const g = Math.floor(Math.random() * 256);
+          const b = Math.floor(Math.random() * 256);
+          setColorFromRgb(r, g, b);
+          showToast(`Generated: ${rgbToHex(r, g, b)}`, '🎲');
+        }
+
+        // 11. i18n Translation Engine
+        function applyLanguage(lang) {
+          if (!I18N[lang]) lang = 'en';
+          state.lang = lang;
+          localStorage.setItem(STORAGE_KEYS.LANG, lang);
+          DOM.langSelector.value = lang;
+
+          // RTL support for Arabic
+          if (lang === 'ar') {
+            document.documentElement.setAttribute('dir', 'rtl');
+          } else {
+            document.documentElement.removeAttribute('dir');
+          }
+
+          const dict = I18N[lang] || I18N.en;
+          document.querySelectorAll('[data-i18n]').forEach(el => {
+            const key = el.getAttribute('data-i18n');
+            if (dict[key]) {
+              el.textContent = dict[key];
+            } else if (I18N.en && I18N.en[key]) {
+              el.textContent = I18N.en[key];
+            }
+          });
+
+          renderCVDModule(state.r, state.g, state.b);
+        }
+
+        // 11. Theme Switcher Engine
+        function applyTheme(themeName) {
+          state.theme = themeName;
+          localStorage.setItem(STORAGE_KEYS.THEME, themeName);
+          DOM.themeSelector.value = themeName;
+
+          DOM.html.classList.remove('dark', 'light');
+          document.body.className = document.body.className.replace(/theme-\w+/g, '').trim();
+
+          if (themeName === 'light') {
+            DOM.html.classList.remove('dark');
+            DOM.html.classList.add('light');
+            document.body.className = "bg-slate-100 text-slate-900 min-h-screen flex flex-col font-sans antialiased selection:bg-indigo-500 selection:text-white";
+          } else if (themeName === 'cyberpunk') {
+            DOM.html.classList.add('dark');
+            document.body.className = "bg-purple-950 text-pink-200 min-h-screen flex flex-col font-sans antialiased selection:bg-pink-500 selection:text-white";
+          } else if (themeName === 'emerald') {
+            DOM.html.classList.add('dark');
+            document.body.className = "bg-teal-950 text-emerald-100 min-h-screen flex flex-col font-sans antialiased selection:bg-teal-500 selection:text-white";
+          } else if (themeName === 'sunset') {
+            DOM.html.classList.add('dark');
+            document.body.className = "bg-stone-950 text-amber-100 min-h-screen flex flex-col font-sans antialiased selection:bg-amber-500 selection:text-white";
+          } else {
+            // Default dark
+            DOM.html.classList.add('dark');
+            document.body.className = "bg-slate-950 text-slate-100 min-h-screen flex flex-col font-sans antialiased selection:bg-indigo-500 selection:text-white";
+          }
+        }
+
+        // 12. Event Listeners Setup
+        function bindEvents() {
+          // Language selector
+          DOM.langSelector.addEventListener('change', (e) => applyLanguage(e.target.value));
+
+          // Theme selector
+          DOM.themeSelector.addEventListener('change', (e) => applyTheme(e.target.value));
+
+          // Top Randomizer
+          document.getElementById('btn-random-top').addEventListener('click', generateRandomColor);
+
+          // EyeDropper API (if available in Chromium/Edge)
+          if (window.EyeDropper) {
+            DOM.btnEyedropper.classList.remove('hidden');
+            DOM.btnEyedropper.classList.add('flex');
+            DOM.btnEyedropper.addEventListener('click', () => {
+              const eyeDropper = new EyeDropper();
+              eyeDropper.open().then(result => {
+                setColorFromHex(result.sRGBHex);
+                showToast(`Picked: ${result.sRGBHex}`, '💉');
+              }).catch(() => {});
+            });
+          }
+
+          // Save current color
+          document.getElementById('btn-save-current').addEventListener('click', () => {
+            const hex = rgbToHex(state.r, state.g, state.b);
+            if (!state.palette.includes(hex)) {
+              state.palette.push(hex);
+              localStorage.setItem(STORAGE_KEYS.PALETTE, JSON.stringify(state.palette));
+              renderSavedPalette();
+              showToast(I18N[state.lang].saved_toast, '⭐');
+            } else {
+              showToast('Already in saved palette', 'ℹ️');
+            }
+          });
+
+          // Copy master hex button
+          document.getElementById('btn-copy-master').addEventListener('click', () => {
+            const textToCopy = (state.colorBlindMode && state.colorBlindMode !== 'normal')
+              ? simulateCVD(state.r, state.g, state.b, state.colorBlindMode).hex
+              : rgbToHex(state.r, state.g, state.b);
+            copyText(textToCopy);
+          });
+
+          // Reset Swatch CVD simulation button
+          if (DOM.btnResetCvdSwatch) {
+            DOM.btnResetCvdSwatch.addEventListener('click', (e) => {
+              e.stopPropagation();
+              state.colorBlindMode = 'normal';
+              updateUI();
+              showToast('Reset to Normal Vision', '👁️');
+            });
+          }
+
+          // Quick Vision Mode Pills under Swatch
+          document.querySelectorAll('.cvd-pill-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+              const mode = btn.getAttribute('data-cvd');
+              toggleColorBlindMode(mode);
+            });
+          });
+
+          // Native color input
+          DOM.nativePicker.addEventListener('input', (e) => {
+            setColorFromHex(e.target.value, 'nativePicker');
+          });
+
+          // Text HEX input
+          DOM.inputHex.addEventListener('input', (e) => {
+            let v = e.target.value.trim();
+            if (!v.startsWith('#')) v = '#' + v;
+            if (/^#[0-9A-Fa-f]{6}$/.test(v)) {
+              setColorFromHex(v, 'inputHex');
+            }
+          });
+
+          // Text RGB input
+          DOM.inputRgbStr.addEventListener('change', (e) => {
+            const parts = e.target.value.split(',').map(n => parseInt(n.trim(), 10));
+            if (parts.length >= 3 && !parts.some(isNaN)) {
+              setColorFromRgb(parts[0], parts[1], parts[2], 'inputRgbStr');
+            }
+          });
+
+          // Alpha Slider
+          DOM.inputAlpha.addEventListener('input', (e) => {
+            state.a = parseInt(e.target.value, 10) / 100;
+            DOM.labelAlphaVal.textContent = `${e.target.value}%`;
+            updateUI('inputAlpha');
+          });
+
+          // RGB Sliders & Number inputs
+          const handleRgbChange = () => {
+            setColorFromRgb(
+              parseInt(DOM.sliderR.value, 10),
+              parseInt(DOM.sliderG.value, 10),
+              parseInt(DOM.sliderB.value, 10),
+              'rgbSliders'
+            );
+          };
+          [DOM.sliderR, DOM.sliderG, DOM.sliderB].forEach(el => el.addEventListener('input', () => {
+            DOM.numR.value = DOM.sliderR.value;
+            DOM.numG.value = DOM.sliderG.value;
+            DOM.numB.value = DOM.sliderB.value;
+            handleRgbChange();
+          }));
+          [DOM.numR, DOM.numG, DOM.numB].forEach(el => el.addEventListener('input', () => {
+            DOM.sliderR.value = DOM.numR.value;
+            DOM.sliderG.value = DOM.numG.value;
+            DOM.sliderB.value = DOM.numB.value;
+            handleRgbChange();
+          }));
+
+          // HSL Sliders & Number inputs
+          const handleHslChange = () => {
+            const h = parseInt(DOM.sliderH.value, 10);
+            const s = parseInt(DOM.sliderS.value, 10);
+            const l = parseInt(DOM.sliderL.value, 10);
+            const rgb = hslToRgb(h, s, l);
+            setColorFromRgb(rgb.r, rgb.g, rgb.b, 'hslSliders');
+          };
+          [DOM.sliderH, DOM.sliderS, DOM.sliderL].forEach(el => el.addEventListener('input', () => {
+            DOM.numH.value = DOM.sliderH.value;
+            DOM.numS.value = DOM.sliderS.value;
+            DOM.numL.value = DOM.sliderL.value;
+            handleHslChange();
+          }));
+          [DOM.numH, DOM.numS, DOM.numL].forEach(el => el.addEventListener('input', () => {
+            DOM.sliderH.value = DOM.numH.value;
+            DOM.sliderS.value = DOM.numS.value;
+            DOM.sliderL.value = DOM.numL.value;
+            handleHslChange();
+          }));
+
+          // RGB/HSL Tab switching
+          DOM.tabRgb.addEventListener('click', () => {
+            DOM.tabRgb.className = "pb-2 border-b-2 border-indigo-500 text-indigo-400";
+            DOM.tabHsl.className = "pb-2 border-b-2 border-transparent text-slate-400 hover:text-slate-200";
+            DOM.rgbContainer.classList.remove('hidden');
+            DOM.hslContainer.classList.add('hidden');
+          });
+          DOM.tabHsl.addEventListener('click', () => {
+            DOM.tabHsl.className = "pb-2 border-b-2 border-indigo-500 text-indigo-400";
+            DOM.tabRgb.className = "pb-2 border-b-2 border-transparent text-slate-400 hover:text-slate-200";
+            DOM.hslContainer.classList.remove('hidden');
+            DOM.rgbContainer.classList.add('hidden');
+          });
+
+          // Format Cards Click to Copy
+          document.querySelectorAll('.format-card').forEach(card => {
+            card.addEventListener('click', () => {
+              const type = card.getAttribute('data-copy-type');
+              let text = '';
+              const hex = rgbToHex(state.r, state.g, state.b);
+              const hsl = rgbToHsl(state.r, state.g, state.b);
+              switch(type) {
+                case 'hex': text = hex; break;
+                case 'rgba': text = `rgba(${state.r}, ${state.g}, ${state.b}, ${state.a})`; break;
+                case 'hsla': text = `hsla(${hsl.h}, ${hsl.s}%, ${hsl.l}%, ${state.a})`; break;
+                case 'css-var': text = `--color-primary: ${hex};`; break;
+                case 'tailwind': text = `'primary': '${hex}'`; break;
+              }
+              copyText(text);
+            });
+          });
+
+          // History clear button
+          document.getElementById('btn-clear-history').addEventListener('click', () => {
+            state.history = [rgbToHex(state.r, state.g, state.b)];
+            localStorage.setItem(STORAGE_KEYS.HISTORY, JSON.stringify(state.history));
+            renderHistory();
+            showToast('History cleared', '🧹');
+          });
+
+          // Curated Kits
+          document.querySelectorAll('.preset-pill').forEach(btn => {
+            btn.addEventListener('click', () => {
+              const colors = btn.getAttribute('data-colors').split(',');
+              state.palette = colors;
+              localStorage.setItem(STORAGE_KEYS.PALETTE, JSON.stringify(state.palette));
+              renderSavedPalette();
+              setColorFromHex(colors[0]);
+              showToast('Theme kit loaded!', '🎨');
+            });
+          });
+
+          // Modals logic: Shortcuts
+          const openShortcuts = () => DOM.modalShortcuts.classList.replace('hidden', 'flex');
+          const closeShortcuts = () => DOM.modalShortcuts.classList.replace('flex', 'hidden');
+          document.getElementById('btn-shortcuts').addEventListener('click', openShortcuts);
+          document.getElementById('btn-close-shortcuts').addEventListener('click', closeShortcuts);
+          document.getElementById('btn-done-shortcuts').addEventListener('click', closeShortcuts);
+          document.getElementById('btn-footer-shortcuts').addEventListener('click', (e) => {
+            e.preventDefault();
+            openShortcuts();
+          });
+
+          // Modals logic: Palette Export/Import
+          const openExport = () => {
+            DOM.textareaJson.value = JSON.stringify(state.palette, null, 2);
+            DOM.modalExport.classList.replace('hidden', 'flex');
+          };
+          const closeExport = () => DOM.modalExport.classList.replace('flex', 'hidden');
+          document.getElementById('btn-export-palette-modal').addEventListener('click', openExport);
+          document.getElementById('btn-close-export').addEventListener('click', closeExport);
+
+          document.getElementById('btn-copy-json').addEventListener('click', () => {
+            copyText(JSON.stringify(state.palette, null, 2), 'JSON copied to clipboard!');
+          });
+
+          document.getElementById('btn-apply-json').addEventListener('click', () => {
+            try {
+              const imported = JSON.parse(DOM.textareaJson.value);
+              if (Array.isArray(imported) && imported.length > 0) {
+                state.palette = imported;
+                localStorage.setItem(STORAGE_KEYS.PALETTE, JSON.stringify(state.palette));
+                renderSavedPalette();
+                closeExport();
+                showToast('Palette imported successfully!', '✅');
+              } else {
+                showToast('Invalid JSON array format', '❌');
+              }
+            } catch (e) {
+              showToast('JSON syntax error', '❌');
+            }
+          });
+
+          document.getElementById('btn-export-css').addEventListener('click', () => {
+            const css = ':root {\n' + state.palette.map((c, i) => `  --color-${i + 1}: ${c};`).join('\n') + '\n}';
+            copyText(css, 'CSS variables copied!');
+          });
+
+          document.getElementById('btn-clear-palette').addEventListener('click', () => {
+            state.palette = [];
+            localStorage.setItem(STORAGE_KEYS.PALETTE, JSON.stringify(state.palette));
+            renderSavedPalette();
+            closeExport();
+            showToast('Palette cleared', '🧹');
+          });
+
+          // Modals logic: Feedback
+          const openFeedback = () => DOM.modalFeedback.classList.replace('hidden', 'flex');
+          const closeFeedback = () => DOM.modalFeedback.classList.replace('flex', 'hidden');
+          document.getElementById('btn-footer-feedback').addEventListener('click', openFeedback);
+          document.getElementById('btn-close-feedback').addEventListener('click', closeFeedback);
+          document.getElementById('btn-submit-feedback').addEventListener('click', () => {
+            const input = document.getElementById('feedback-input').value.trim();
+            if (input) {
+              closeFeedback();
+              document.getElementById('feedback-input').value = '';
+              showToast('Thank you for your feedback!', '💌');
+            } else {
+              showToast('Please type a message first', '⚠️');
+            }
+          });
+
+          // Share Link button
+          document.getElementById('btn-footer-share').addEventListener('click', () => {
+            const url = window.location.href;
+            copyText(url, I18N[state.lang].link_copied);
+          });
+
+          // Global Keyboard Shortcuts
+          window.addEventListener('keydown', (e) => {
+            // Ignore if active inside an input or textarea
+            if (['INPUT', 'TEXTAREA', 'SELECT'].includes(document.activeElement.tagName)) return;
+
+            if (e.code === 'Space') {
+              e.preventDefault();
+              generateRandomColor();
+            } else if (e.key === 'c' || e.key === 'C') {
+              e.preventDefault();
+              copyText(rgbToHex(state.r, state.g, state.b));
+            } else if (e.key === 'r' || e.key === 'R') {
+              e.preventDefault();
+              copyText(`rgb(${state.r}, ${state.g}, ${state.b})`);
+            } else if (e.key === 'h' || e.key === 'H') {
+              e.preventDefault();
+              const hsl = rgbToHsl(state.r, state.g, state.b);
+              copyText(`hsl(${hsl.h}, ${hsl.s}%, ${hsl.l}%)`);
+            } else if (e.key === 's' || e.key === 'S') {
+              e.preventDefault();
+              document.getElementById('btn-save-current').click();
+            } else if (e.key === '?' || e.key === 'k' || e.key === 'K') {
+              e.preventDefault();
+              if (DOM.modalShortcuts.classList.contains('hidden')) {
+                openShortcuts();
+              } else {
+                closeShortcuts();
+              }
+            } else if (e.key === 'Escape') {
+              closeShortcuts();
+              closeExport();
+              closeFeedback();
+            }
+          });
+        }
+
+        // 13. Initialization
+        function init() {
+          // Check for URL hash (#color=4F46E5 or #4F46E5)
+          const hash = window.location.hash;
+          if (hash) {
+            const match = hash.match(/#color=([0-9a-fA-F]{3,6})/) || hash.match(/#([0-9a-fA-F]{6})/);
+            if (match && match[1]) {
+              setColorFromHex('#' + match[1]);
+            }
+          }
+
+          applyTheme(state.theme);
+          applyLanguage(state.lang);
+          bindEvents();
+          renderHistory();
+          renderSavedPalette();
+          updateUI();
+        }
+
+        // Start Applet
+        if (document.readyState === 'loading') {
+          document.addEventListener('DOMContentLoaded', init);
+        } else {
+          init();
+        }
+      })();
+    </script>
+  </body>
+</html>
+
+
